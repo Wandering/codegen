@@ -49,13 +49,13 @@ selectList
     <!-- 更新 -->
     <update id="update" parameterType="${className}">
         UPDATE ${table.sqlName}
-        <set>
+        <trim prefix="SET" suffixOverrides=",">
             <#list table.notPkColumns as column>
             <if test="${column.columnNameFirstLower}!=null">
-                ${column.sqlName} = <@mapperEl column.columnNameFirstLower/><#if column_has_next>,</#if>
+                ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>,
             </if>
-        </#list>
-        </set>
+            </#list>
+        </trim>
         WHERE
         <#list table.compositeIdColumns as column>
         ${column.sqlName} = <@mapperEl column.columnNameFirstLower/><#if column_has_next> AND </#if>
@@ -63,24 +63,26 @@ selectList
     </update>
 
     <update id="updateMap">
-    UPDATE ${table.sqlName}
-    <set>
-        <#list table.notPkColumns as column>
+        UPDATE ${table.sqlName}
+        <trim prefix="SET" suffixOverrides=",">
+            <#list table.notPkColumns as column>
             <if test="map.${column.columnNameFirstLower}!=null">
-                ${column.sqlName} = <@mapperEl 'map.'+column.columnNameFirstLower /><#if column_has_next>,</#if>
+                ${column.sqlName} = <@mapperEl 'map.'+column.columnNameFirstLower />,
             </if>
-        </#list>
-    </set>
-    WHERE
-    id = <@mapperEl 'map.id'/>
+            </#list>
+        </trim>
+        WHERE
+        id = <@mapperEl 'map.id'/>
     </update>
 
 
     <update id="updateNull" parameterType="${className}">
-        UPDATE ${table.sqlName} SET
-        <#list table.notPkColumns as column>
-        ${column.sqlName} = <@mapperEl column.columnNameFirstLower/><#if column_has_next>,</#if>
-        </#list>
+        UPDATE ${table.sqlName}
+        <trim prefix="SET" suffixOverrides=",">
+            <#list table.notPkColumns as column>
+            ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>,
+            </#list>
+        </trim>
         WHERE
         <#list table.compositeIdColumns as column>
         ${column.sqlName} = <@mapperEl column.columnNameFirstLower/> <#if column_has_next> AND </#if>
@@ -89,20 +91,55 @@ selectList
 
     <!-- 按Id删除 -->
     <delete id="deleteById" parameterType="${idJavaType}">
+        DELETE FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.compositeIdColumns as column>
+            AND ${column.sqlName} = <@mapperEl 'id'/>
+            </#list>
+        </trim>
+    </delete>
+
+
+    <delete id="deleteByCondition" parameterType="java.util.Map">
+        DELETE FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.columns as column>
+            <if test="${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>
+            </if>
+            </#list>
+        </trim>
+    </delete>
+
+    <delete id="deleteByProperty" parameterType="java.util.Map">
         DELETE FROM ${table.sqlName} WHERE
-        <#list table.compositeIdColumns as column>
-        ${column.sqlName} = <@mapperEl 'id'/> <#if column_has_next> AND </#if>
-        </#list>
+        <@mapperEl 'property'/> = <@mapperEl 'value'/>
     </delete>
 
     <select id="fetch" parameterType="${idJavaType}" resultType="${className}">
         SELECT
         <include refid="Base_Column_List" />
         FROM ${table.sqlName}
-        WHERE
-        <#list table.compositeIdColumns as column>
-        ${column.sqlName} = <@mapperEl 'id'/> <#if column_has_next> AND </#if>
-        </#list>
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.compositeIdColumns as column>
+            AND ${column.sqlName} = <@mapperEl 'id'/>
+            </#list>
+        </trim>
+    </select>
+
+    <select id="findOne" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName} WHERE
+        <@mapperEl 'property'/> = <@mapperEl 'value'/>
+        LIMIT 0,1
+    </select>
+
+    <select id="findList" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName} WHERE
+        <@mapperEl 'property'/> = <@mapperEl 'value'/>
     </select>
 
     <select id="findAll" resultType="${className}">
@@ -112,23 +149,71 @@ selectList
     </select>
 
     <select id="queryPage" resultType="${className}">
-    SELECT
-    <include refid="Base_Column_List" />
-    FROM ${table.sqlName}
-    <where>
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <where>
 
-        <if test="condition.whereSql != null">
-            and id in (<@mapperEl 'condition.whereSql'/>)
+            <if test="condition.whereSql != null">
+                and id in (<@mapperEl 'condition.whereSql'/>)
+            </if>
+        </where>
+
+        <if test="offset != null">
+            limit <@mapperEl 'offset'/>, <@mapperEl 'rows'/>
         </if>
-    </where>
+    </select>
 
-    <if test="offset != null">
-        limit <@mapperEl 'offset'/>, <@mapperEl 'rows'/>
-    </if>
+    <select id="like" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.columns as column>
+            <if test="${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} like '%<@mapperEl column.columnNameFirstLower/>%'
+            </if>
+            </#list>
+        </trim>
+    </select>
+
+
+    <select id="queryList" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.columns as column>
+            <if test="${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>
+            </if>
+            </#list>
+        </trim>
+        ORDER BY <@mapperEl 'orderBy'/> <@mapperEl 'sortBy'/>
+    </select>
+
+    <select id="queryOne" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.columns as column>
+            <if test="${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>
+            </if>
+            </#list>
+        </trim>
+        limit 0,1
     </select>
 
     <select id="count" resultType="java.lang.Integer">
         SELECT count(${table.idColumn.sqlName}) FROM ${table.sqlName}
+    </select>
+
+    <select id="selectMaxId" resultType="${idJavaType}">
+        SELECT
+        MAX(id)
+        FROM ${table.sqlName}
     </select>
 
 </mapper>
