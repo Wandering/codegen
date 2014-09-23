@@ -47,7 +47,7 @@ selectList
     </insert>
 
     <!-- 更新 -->
-    <update id="update" parameterType="${basepackage}.${persistence}.beans.${className}">
+    <update id="update" parameterType="${className}">
         UPDATE ${table.sqlName}
         <set>
             <#list table.notPkColumns as column>
@@ -61,6 +61,20 @@ selectList
         ${column.sqlName} = <@mapperEl column.columnNameFirstLower/><#if column_has_next> AND </#if>
         </#list>
     </update>
+
+    <update id="updateMap">
+    UPDATE ${table.sqlName}
+    <set>
+        <#list table.notPkColumns as column>
+            <if test="map.${column.columnNameFirstLower}!=null">
+                ${column.sqlName} = <@mapperEl 'map.'+column.columnNameFirstLower /><#if column_has_next>,</#if>
+            </if>
+        </#list>
+    </set>
+    WHERE
+    id = <@mapperEl 'map.id'/>
+    </update>
+
 
     <update id="updateNull" parameterType="${className}">
         UPDATE ${table.sqlName} SET
@@ -95,6 +109,22 @@ selectList
         SELECT
         <include refid="Base_Column_List" />
         FROM ${table.sqlName}
+    </select>
+
+    <select id="queryPage" resultType="${className}">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM ${table.sqlName}
+    <where>
+
+        <if test="condition.whereSql != null">
+            and id in (<@mapperEl 'condition.whereSql'/>)
+        </if>
+    </where>
+
+    <if test="offset != null">
+        limit <@mapperEl 'offset'/>, <@mapperEl 'rows'/>
+    </if>
     </select>
 
     <select id="count" resultType="java.lang.Integer">

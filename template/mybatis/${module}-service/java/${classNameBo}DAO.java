@@ -8,7 +8,7 @@
 <#assign classNameLower = className?uncap_first>   
 package ${basepackage}.${persistence};
 
-import cn.thinkjoy.common.dao.BaseDAO;
+import ${basepackage}.BaseDAO;
 import ${basepackage}.domain.${className};
 
 public interface ${className}DAO extends BaseDAO<${className}>{
