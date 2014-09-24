@@ -108,7 +108,6 @@ public class DataSourceProvider {
          * TODO 简单描述该方法的实现功能（可选）.
          * @see javax.sql.CommonDataSource#getParentLogger()
          */
-        @Override
         public Logger getParentLogger() throws SQLFeatureNotSupportedException {
             
             // TODO Auto-generated method stub
