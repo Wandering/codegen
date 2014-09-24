@@ -31,13 +31,13 @@ import cn.thinkjoy.common.domain.BaseDomain;
 
 import java.util.*;
 
-public class ${className} extends <#if isCbd>BaseCreateDomain<#else>BaseDomain</#if>{
-	<#list table.columns as column>
-        <#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
-        <#else>
-            private ${column.possibleShortJavaType} ${column.columnNameFirstLower};
-        </#if>
-	</#list>
+public class ${className} extends <#if isCbd>CreateBaseDomain<#else>BaseDomain</#if>{
+<#list table.columns as column>
+<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
+<#else>
+    private ${column.possibleShortJavaType} ${column.columnNameFirstLower};
+</#if>
+</#list>
 
 <@generateConstructor className/>
 <@generateJavaColumns/>
@@ -73,22 +73,21 @@ public class ${className} extends <#if isCbd>BaseCreateDomain<#else>BaseDomain</
 }
 
 <#macro generateJavaColumns>
-	<#list table.columns as column>
-		<#if column.isDateTimeColumn>
+<#list table.columns as column>
+    <#if column.isDateTimeColumn>
 
-		</#if>
-    <#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
-    <#else>
-        public void set${column.columnName}(${column.possibleShortJavaType} value) {
-            this.${column.columnNameFirstLower} = value;
-        }
-
-        public ${column.possibleShortJavaType} get${column.columnName}() {
-            return this.${column.columnNameFirstLower};
-        }
     </#if>
+<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
+<#else>
+    public void set${column.columnName}(${column.possibleShortJavaType} value) {
+        this.${column.columnNameFirstLower} = value;
+    }
 
-	</#list>
+    public ${column.possibleShortJavaType} get${column.columnName}() {
+        return this.${column.columnNameFirstLower};
+    }
+</#if>
+</#list>
 </#macro>
 
 <#macro generateJavaOneToMany>
