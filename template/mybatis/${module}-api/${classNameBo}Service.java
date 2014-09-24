@@ -10,7 +10,7 @@
 
 package ${basepackage}.service;
 import cn.thinkjoy.common.service.IBaseService;
-import cn.thinkjoy.common.service.IPaseService;
+import cn.thinkjoy.common.service.IPageService;
 
 public interface ${className}Service extends IBaseService,IPageService{
 }
