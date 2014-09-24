@@ -7,13 +7,4 @@
 <#macro generateConstructor constructor>
 	public ${constructor}(){
 	}
-
-	public ${constructor}(<#list table.compositeIdColumns as column>${column.possibleShortJavaType} ${column.columnNameLower}<#if column_has_next>,</#if></#list>){
-	<#list table.compositeIdColumns as column>
-		<#if column.pk>
-		this.${column.columnNameLower} = ${column.columnNameLower};
-		</#if>
-	</#list>	
-	}
-
 </#macro>
