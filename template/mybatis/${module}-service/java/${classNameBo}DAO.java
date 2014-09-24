@@ -8,10 +8,10 @@
 <#assign classNameLower = className?uncap_first>   
 package ${basepackage}.${persistence};
 
-import ${basepackage}.BaseDAO;
+import cn.thinkjoy.common.dao.IBaseDAO;
 import ${basepackage}.domain.${className};
 
-public interface ${className}DAO extends BaseDAO<${className}>{
+public interface ${className}DAO extends IBaseDAO<${className}>{
 	
 <#list table.columns as column>
 	<#if (column.unique && !column.pk)>

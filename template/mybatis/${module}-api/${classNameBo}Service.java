@@ -9,9 +9,7 @@
  */
 
 package ${basepackage}.service;
-import ${basepackage}.BaseService;
-import ${basepackage}.domain.${className};
-import ${basepackage}.service.base.PageService;
+import cn.thinkjoy.common.service.IBaseService;
 
-public interface ${className}Service extends BaseService, PageService{
+public interface ${className}Service extends IBaseService{
 }
