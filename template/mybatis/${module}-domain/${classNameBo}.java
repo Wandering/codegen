@@ -6,20 +6,37 @@
  * $Id:  ${className}.java ${now?string('yyyy-MM-dd HH:mm:ss')} $
  */
 <#include "/macro.include"/>
+<#assign classNameLower = className?uncap_first>
 
-<#assign classNameLower = className?uncap_first> 
+<#assign isCbd = false>
+
+<#list table.columns as column>
+    <#if column=='creator'>
+        <#assign isCbd = true>
+    </#if>
+</#list>
+
+
 package ${basepackage}.domain;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+<#if isCbd>
+import cn.thinkjoy.common.domain.CreateBaseDomain;
+<#else>
 import cn.thinkjoy.common.domain.BaseDomain;
+</#if>
+
 import java.util.*;
 
-public class ${className} extends BaseDomain{
+public class ${className} extends <#if isCbd>BaseCreateDomain<#else>BaseDomain</#if>{
 	<#list table.columns as column>
-	private ${column.possibleShortJavaType} ${column.columnNameFirstLower};
+        <#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
+        <#else>
+            private ${column.possibleShortJavaType} ${column.columnNameFirstLower};
+        </#if>
 	</#list>
 
 <@generateConstructor className/>
@@ -60,13 +77,17 @@ public class ${className} extends BaseDomain{
 		<#if column.isDateTimeColumn>
 
 		</#if>
-	public void set${column.columnName}(${column.possibleShortJavaType} value) {
-		this.${column.columnNameFirstLower} = value;
-	}
-	
-	public ${column.possibleShortJavaType} get${column.columnName}() {
-		return this.${column.columnNameFirstLower};
-	}
+    <#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
+    <#else>
+        public void set${column.columnName}(${column.possibleShortJavaType} value) {
+            this.${column.columnNameFirstLower} = value;
+        }
+
+        public ${column.possibleShortJavaType} get${column.columnName}() {
+            return this.${column.columnNameFirstLower};
+        }
+    </#if>
+
 	</#list>
 </#macro>
 
