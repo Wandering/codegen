@@ -18,7 +18,7 @@ import ${basepackage}.domain.${className};
 import ${basepackage}.domain.Resource;
 import ${basepackage}.domain.ResourceGrid;
 import ${basepackage}.service.${className}Service;
-import ${basepackage}.service.base.BizData4Page;
+import cn.thinkjoy.common.domain.view.BizData4Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
