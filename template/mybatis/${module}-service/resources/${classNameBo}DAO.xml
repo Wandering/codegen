@@ -5,6 +5,7 @@
 <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 <#assign idJavaType = table.idColumn.javaType>
 <#macro mapperEl value>${r"#{"}${value}}</#macro>
+<#macro jspEl value>${r"${"}${value}}</#macro>
 <#macro namespace>${basepackage}.${persistence}</#macro>
 
 <mapper namespace="${basepackage}.${persistence}.${className}DAO">
@@ -113,7 +114,7 @@ selectList
 
     <delete id="deleteByProperty" parameterType="java.util.Map">
         DELETE FROM ${table.sqlName} WHERE
-        <@mapperEl 'property'/> = <@mapperEl 'value'/>
+        <@jspEl 'property'/> = <@mapperEl 'value'/>
     </delete>
 
     <select id="fetch" parameterType="${idJavaType}" resultType="${className}">
@@ -131,7 +132,7 @@ selectList
         SELECT
         <include refid="Base_Column_List" />
         FROM ${table.sqlName} WHERE
-        <@mapperEl 'property'/> = <@mapperEl 'value'/>
+        <@jspEl 'property'/> = <@mapperEl 'value'/>
         LIMIT 0,1
     </select>
 
@@ -139,7 +140,7 @@ selectList
         SELECT
         <include refid="Base_Column_List" />
         FROM ${table.sqlName} WHERE
-        <@mapperEl 'property'/> = <@mapperEl 'value'/>
+        <@jspEl 'property'/> = <@mapperEl 'value'/>
     </select>
 
     <select id="findAll" resultType="${className}">
@@ -160,7 +161,7 @@ selectList
         </where>
 
         <if test="offset != null">
-            limit <@mapperEl 'offset'/>, <@mapperEl 'rows'/>
+            limit <@jspEl 'offset'/>, <@jspEl 'rows'/>
         </if>
     </select>
 
@@ -189,7 +190,7 @@ selectList
             </if>
             </#list>
         </trim>
-        ORDER BY <@mapperEl 'orderBy'/> <@mapperEl 'sortBy'/>
+        ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
     </select>
 
     <select id="queryOne" parameterType="java.util.Map" resultType="${className}">
