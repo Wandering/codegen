@@ -43,8 +43,9 @@ public class Generator {
 	private static final String GENERATOR_INSERT_LOCATION = "generator-insert-location";
 	private List templateRootDirs = new ArrayList();
 	private String outRootDir;
-	private boolean ignoreTemplateGenerateException = true;
-	private String removeExtensions = System.getProperty("generator.removeExtensions",".ftl,.vm");
+	private boolean ignoreTemplateGenerateException = false;
+//	private String removeExtensions = System.getProperty("generator.removeExtensions",".ftl,.vm");
+    private String removeExtensions = System.getProperty("generator.removeExtensions",".vm");
 	private boolean isCopyBinaryFile = true;
 	
 	private String includes = System.getProperty("generator.includes"); // 需要处理的模板，使用逗号分隔符,示例值: java_src/**,java_test/**

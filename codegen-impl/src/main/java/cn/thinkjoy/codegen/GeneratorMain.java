@@ -20,8 +20,8 @@ public class GeneratorMain {
 //		g.printAllTableNames();				//打印数据库中的表名称
 		
 		g.deleteOutRootDir();			//删除生成器的输出目录
-//		g.generateByTable("ehr_degree","template/mybatis");	//通过数据库表生成文件,template为模板的根目录
-//		g.generateByAllTable("template/mybatis");	//自动搜索数据库中的所有表并生成文件,template为模板的根目录
+//		g.generateByTable("ehr_salary","template/mybatis");	//通过数据库表生成文件,template为模板的根目录
+		g.generateByAllTable("template/mybatis");	//自动搜索数据库中的所有表并生成文件,template为模板的根目录
         g.generateByTableList("template/common");
 //		g.generateByAllTable("template/hibernate");
 //		g.generateByClass(Blog.class,"template_clazz");
