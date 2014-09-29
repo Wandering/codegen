@@ -19,13 +19,15 @@ import cn.thinkjoy.common.service.impl.AbstractPageService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ${basepackage}.dao.${className}DAO;
+import ${basepackage}.domain.${className};
 
 import java.util.List;
 import java.util.Map;
 
 
 @Service("${className}ServiceImpl")
-public class ${className}ServiceImpl extends AbstractPageService implements ${className}Service{
+public class ${className}ServiceImpl extends AbstractPageService<${className}DAO,${className}> implements ${className}Service{
     @Autowired
     private ${className}DAO ${classNameLower}DAO;
 
