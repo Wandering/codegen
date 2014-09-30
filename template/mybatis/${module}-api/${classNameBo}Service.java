@@ -11,6 +11,8 @@
 package ${basepackage}.service;
 import cn.thinkjoy.common.service.IBaseService;
 import cn.thinkjoy.common.service.IPageService;
+import ${basepackage}.dao.${className}DAO;
+import ${basepackage}.domain.${className};
 
-public interface ${className}Service extends IBaseService,IPageService{
+public interface ${className}Service extends IBaseService<${className}DAO,${className}>,IPageService<${className}DAO,${className}>{
 }
