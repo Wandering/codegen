@@ -20,8 +20,106 @@ public class Table implements java.io.Serializable,Cloneable {
 	String sqlName;
 	String remarks;
 	String className;
-	
-	/** the name of the owner of the synonym if this table is a synonym */
+    String instanceName;
+
+    /** 序列   生成的自增id值 */
+    int seq;
+    /** 编码   有些是树形结构需要确定上下级关系 */
+    String number;
+    String longnumber;
+    /** 业务模型名称 */
+    String name;
+    /** 菜单名称 */
+    String resName;
+    /** 父菜单名称 */
+    String parentResName;
+    /** 继承父类名称 */
+    String parentClassName;
+    String description;
+
+    int parentId;
+
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    public int getSeq() {
+        return seq;
+    }
+
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getLongnumber() {
+        return longnumber;
+    }
+
+    public void setLongnumber(String longnumber) {
+        this.longnumber = longnumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getResName() {
+        return resName;
+    }
+
+    public void setResName(String resName) {
+        this.resName = resName;
+    }
+
+    public String getParentResName() {
+        return parentResName;
+    }
+
+    public void setParentResName(String parentResName) {
+        this.parentResName = parentResName;
+    }
+
+    public String getParentClassName() {
+        return parentClassName;
+    }
+
+    public void setParentClassName(String parentClassName) {
+        this.parentClassName = parentClassName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /** the name of the owner of the synonym if this table is a synonym */
 	private String ownerSynonymName = null;
 	/** real table name for oracle SYNONYM */
 	private String tableSynonymName = null; 

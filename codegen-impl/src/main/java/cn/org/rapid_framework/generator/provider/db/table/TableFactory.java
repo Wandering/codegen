@@ -20,7 +20,10 @@ import java.util.Map;
 import cn.org.rapid_framework.generator.GeneratorProperties;
 import cn.org.rapid_framework.generator.provider.db.DataSourceProvider;
 import cn.org.rapid_framework.generator.provider.db.table.model.Column;
+import cn.org.rapid_framework.generator.provider.db.table.model.ParentRes;
 import cn.org.rapid_framework.generator.provider.db.table.model.Table;
+import cn.org.rapid_framework.generator.provider.db.table.model.util.NumGen;
+import cn.org.rapid_framework.generator.provider.db.table.model.util.SeqGen;
 import cn.org.rapid_framework.generator.util.BeanHelper;
 import cn.org.rapid_framework.generator.util.FileHelper;
 import cn.org.rapid_framework.generator.util.GLogger;
@@ -42,6 +45,9 @@ public class TableFactory {
 	
 	private DbHelper dbHelper = new DbHelper();
 	private static TableFactory instance = null;
+
+    private List<Table> tables = new ArrayList<Table>();
+    private Map<String, ParentRes> parentResMap = new HashMap<String, ParentRes>();
 	
 	private TableFactory() {
 	}
@@ -126,17 +132,51 @@ public class TableFactory {
 		String realTableName = null;
 		try {
 			ResultSetMetaData rsMetaData = rs.getMetaData();
-			String schemaName = rs.getString("TABLE_SCHEM") == null ? "" : rs.getString("TABLE_SCHEM");
+			//String schemaName = rs.getString("TABLE_SCHEM") == null ? "" : rs.getString("TABLE_SCHEM");
 			realTableName = rs.getString("TABLE_NAME");
 			String tableType = rs.getString("TABLE_TYPE");
-			String remarks = rs.getString("REMARKS");
+			String remarks = rs.getString("TABLE_COMMENT");//"REMARKS");
 			if(remarks == null && dbHelper.isOracleDataBase()) {
 				remarks = getOracleTableComments(realTableName);
 			}
-			
+
 			Table table = new Table();
 			table.setSqlName(realTableName);
 			table.setRemarks(remarks);
+
+            ParentRes parentRes = null;
+            if(remarks != null && remarks.length() > 0){
+                String[] lines = remarks.split("\\n");
+                table.setDescription(lines[1]);
+                String[] comments = lines[0].split("\\|");
+                table.setName(comments[0]);
+                table.setResName(comments[1]);
+                table.setParentResName(comments[2]);
+                if(comments[3] != null) {
+                    table.setParentClassName(comments[3]);
+                } else {
+                    table.setParentClassName("BaseDomain");
+                }
+
+                if(parentResMap.get(comments[2]) == null) {
+                    parentRes = new ParentRes();
+                    parentRes.setName(comments[2]);
+                    parentRes.setSeq(SeqGen.incr(SeqGen.MODEL));
+
+                    parentRes.setNumber(NumGen.genNum(parentRes.getSeq()));
+
+                    parentResMap.put(comments[2], parentRes);
+                }
+            } else {
+                throw new RuntimeException("table comments is not empty");
+            }
+
+//            table.setSeq(SeqGen.incr(SeqGen.MODEL));
+//            String number = NumGen.genNum(table.getSeq());
+//            table.setNumber(number);
+//            if(parentRes != null) {
+//                table.setLongnumber(parentRes.getNumber() + "_" + table.getNumber());
+//            }
 			
 			if ("SYNONYM".equals(tableType) && dbHelper.isOracleDataBase()) {
 			    table.setOwnerSynonymName(getSynonymOwner(realTableName));
@@ -152,14 +192,47 @@ public class TableFactory {
 			throw new RuntimeException("create table object error,tableName:"+realTableName,e);
 		}
 	}
-	
+
+    public Map<String, ParentRes> getAllParentRes(){
+        return parentResMap;
+    }
+
 	private List getAllTables(Connection conn) throws SQLException {
+        //按新的方式处理
+        Connection schemaConn = DataSourceProvider.getSchemaConnection();
 		DatabaseMetaData dbMetaData = conn.getMetaData();
-		ResultSet rs = dbMetaData.getTables(getCatalog(), getSchema(), null, null);
-		List tables = new ArrayList();
-		while(rs.next()) {
-			tables.add(createTable(conn, rs));
-		}
+		//ResultSet rs = dbMetaData.getTables(getCatalog(), getSchema(), null, null);
+        ResultSet rs = dbMetaData.getTables(conn.getCatalog(), getSchema(), null, null);
+        rs = schemaConn.createStatement().executeQuery("select * from TABLES where TABLE_SCHEMA = '" + GeneratorProperties.getRequiredProperty("jdbc.databasename") + "'");
+		//List tables = new ArrayList();
+        if(tables.size() == 0) {
+            while (rs.next()) {
+                tables.add(createTable(conn, rs));
+            }
+
+            //handle number and parent props
+            String[] splits = null;
+            String className = "I";
+            String instanceName = "";
+            for(Table table : tables){
+                table.setSeq(SeqGen.incr(SeqGen.MODEL));
+                table.setNumber(NumGen.genNum(table.getSeq()));
+                table.setLongnumber(parentResMap.get(table.getParentResName()).getNumber() + "_" + table.getNumber());
+                table.setParentId(parentResMap.get(table.getParentResName()).getSeq());
+
+                splits = table.getSqlName().split("_");
+                for(int i = 1; i < splits.length; i++){
+                    className += splits[i].replaceFirst(String.valueOf(splits[i].charAt(0)), String.valueOf(splits[i].charAt(0)).toUpperCase());
+                    instanceName += splits[i];
+                }
+
+                table.setClassName(className);
+                className = "I";
+                table.setInstanceName(instanceName);
+                instanceName = "";
+            }
+        }
+
 		return tables;
 	}
 

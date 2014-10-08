@@ -11,34 +11,26 @@
 package ${basepackage}.service.impl;
 
 import cn.thinkjoy.common.domain.BaseDomain;
-import ${basepackage}.BaseDAO;
-import ${basepackage}.dao.${className}DAO;
+import cn.thinkjoy.common.dao.IBaseDAO;
+import ${basepackage}.dao.I${className}DAO;
 import ${basepackage}.domain.${className};
-import ${basepackage}.service.${className}Service;
+import ${basepackage}.service.I${className}Service;
 import cn.thinkjoy.common.service.impl.AbstractPageService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ${basepackage}.dao.${className}DAO;
-import ${basepackage}.domain.${className};
 
 import java.util.List;
 import java.util.Map;
 
 
 @Service("${className}ServiceImpl")
-public class ${className}ServiceImpl extends AbstractPageService<${className}DAO,${className}> implements ${className}Service{
+public class ${className}ServiceImpl extends AbstractPageService<IBaseDAO<${className}>, ${className}> implements I${className}Service<IBaseDAO<${className}>,${className}>{
     @Autowired
-    private ${className}DAO ${classNameLower}DAO;
+    private I${className}DAO ${classNameLower}DAO;
 
     @Override
-    public ${className}DAO getDao() {
+    public IBaseDAO<${className}> getDao() {
         return ${classNameLower}DAO;
-    }
-
-    @Override
-    public boolean getEnableDataPerm() {
-        return true;
     }
 
 //    @Override

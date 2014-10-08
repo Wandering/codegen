@@ -20,6 +20,9 @@ public class DataSourceProvider {
 	private static Connection connection;
 	private static DataSource dataSource;
 
+    private static Connection schema_connection;
+    private static DataSource schema_dataSource;
+
 	public synchronized static Connection getConnection() {
 		try {
 			if(connection == null || connection.isClosed()) {
@@ -44,6 +47,29 @@ public class DataSourceProvider {
 		}
 		return dataSource;
 	}
+
+    public synchronized static Connection getSchemaConnection() {
+        try {
+            if(schema_connection == null || schema_connection.isClosed()) {
+                schema_connection = getSchemaDataSource().getConnection();
+            }
+            return schema_connection;
+        }catch(SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public synchronized static DataSource getSchemaDataSource() {
+        if(schema_dataSource == null) {
+            String url = GeneratorProperties.getRequiredProperty("jdbc.url");
+            url = url.replaceAll(GeneratorProperties.getRequiredProperty("jdbc.databasename"), "information_schema");
+            schema_dataSource = new DriverManagerDataSource(url,
+                    GeneratorProperties.getRequiredProperty("jdbc.username"),
+                    GeneratorProperties.getProperty("jdbc.password"),
+                    GeneratorProperties.getRequiredProperty("jdbc.driver"));
+        }
+        return schema_dataSource;
+    }
 	
 	public static class DriverManagerDataSource implements DataSource {
 		private String url;

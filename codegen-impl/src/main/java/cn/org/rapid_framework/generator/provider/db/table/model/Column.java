@@ -85,8 +85,27 @@ public class Column implements java.io.Serializable,Cloneable{
 	 * The comments of column
 	 */
 	private String _remarks;
-			
-	/**
+
+    private String name;
+    private String description;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
 	 * @param table
 	 * @param sqlType
 	 * @param sqlTypeName
@@ -117,6 +136,14 @@ public class Column implements java.io.Serializable,Cloneable{
 		_isUnique = isUnique;
 		_defaultValue = defaultValue;
 		_remarks = remarks;
+
+        String[] nds = remarks.split("\\|");
+        this.name = nds[0];
+        if(nds.length == 2){
+            this.description = nds[1];
+        } else {
+            this.description = nds[0];
+        }
 		
 		GLogger.trace(sqlName + " isPk -> " + _isPk);
 		

@@ -9,6 +9,6 @@
  */
 <#include "/macro.include"/>
 package ${basepackage}.facade;
-public interface ${className}Facade {
+public interface I${className}Facade {
 
 }

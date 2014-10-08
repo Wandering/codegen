@@ -16,7 +16,9 @@ import cn.org.rapid_framework.generator.Generator.GeneratorModel;
 import cn.org.rapid_framework.generator.provider.db.sql.model.Sql;
 import cn.org.rapid_framework.generator.provider.db.table.TableFactory;
 import cn.org.rapid_framework.generator.provider.db.table.model.Table;
+import cn.org.rapid_framework.generator.provider.db.table.model.util.NumGen;
 import cn.org.rapid_framework.generator.provider.java.model.JavaClass;
+import cn.org.rapid_framework.generator.provider.page.Action;
 import cn.org.rapid_framework.generator.util.BeanHelper;
 import cn.org.rapid_framework.generator.util.GLogger;
 import cn.org.rapid_framework.generator.util.GeneratorException;
@@ -26,6 +28,10 @@ import cn.org.rapid_framework.generator.util.GeneratorException;
  *
  */
 public class GeneratorFacade {
+
+    private static String[] alreadyTbls = new String[]{"_data_model", "_model", "_resource", "_resource_action", "_resource_grid", "_role", "_role_resource", "_role_user", "_user_data"};
+
+
 	public Generator g = new Generator();
 	public GeneratorFacade(){
 		g.setOutRootDir(GeneratorProperties.getProperty("outRoot"));
@@ -141,7 +147,7 @@ public class GeneratorFacade {
 				if(isDelete)
 					g.deleteBy(m.templateModel, m.filePathModel);
 				else
-					g.generateBy(m.templateModel, m.filePathModel);
+					g.generateBy(m.templateModel, m.filePathModel, false);
 			}catch(GeneratorException ge) {
 				PrintUtils.printExceptionsSumary(ge.getMessage(),getGenerator(templateRootDir).getOutRootDir(),ge.getExceptions());
 			}
@@ -158,7 +164,7 @@ public class GeneratorFacade {
     		Generator g = getGenerator(templateRootDir);
     		Table table = TableFactory.getInstance().getTable(tableName);
     		try {
-    			processByTable(g,table,isDelete);
+    			processByTable(g,table,isDelete, false);
     		}catch(GeneratorException ge) {
     			PrintUtils.printExceptionsSumary(ge.getMessage(),getGenerator(templateRootDir).getOutRootDir(),ge.getExceptions());
     		}
@@ -166,24 +172,65 @@ public class GeneratorFacade {
 
 		public void processByAllTable(String templateRootDir,boolean isDelete) throws Exception {
 			List<Table> tables = TableFactory.getInstance().getAllTables();
+
+            //yq add
+            List<Table> newtables = new ArrayList<Table>();
+            List<Table> alreadytables = new ArrayList<Table>();
+            boolean isAlreay = false;
+            for(Table table : tables){
+                //允许我多占用一会cpu
+                for(String already : alreadyTbls){
+                    if(table.getSqlName().endsWith(already)){
+                        isAlreay = true;
+                        continue;
+                    }
+                }
+
+                if(!isAlreay) {
+                    newtables.add(table);
+                } else {
+                    alreadytables.add(table);
+                }
+                isAlreay = false;
+            }
+
 			List exceptions = new ArrayList();
-			for(int i = 0; i < tables.size(); i++ ) {
+			for(int i = 0; i < newtables.size(); i++ ) {
 				try {
-					processByTable(getGenerator(templateRootDir),tables.get(i),isDelete);
+					processByTable(getGenerator(templateRootDir),newtables.get(i),isDelete, false);
 				}catch(GeneratorException ge) {
 					exceptions.addAll(ge.getExceptions());
 				}
 			}
+
+            //仅mybatis的公用部分
+            for(int i = 0; i < alreadytables.size(); i++ ) {
+                try {
+                    processByTable(getGenerator(templateRootDir),alreadytables.get(i),isDelete, true);
+                }catch(GeneratorException ge) {
+                    exceptions.addAll(ge.getExceptions());
+                }
+            }
 			PrintUtils.printExceptionsSumary("",getGenerator(templateRootDir).getOutRootDir(),exceptions);
 		}
 
-		public void processByTable(Generator g, Table table,boolean isDelete) throws Exception {
+		public void processByTable(Generator g, Table table,boolean isDelete, boolean isCommon) throws Exception {
 	        GeneratorModel m = GeneratorModelUtils.newFromTable(table);
 	        PrintUtils.printBeginProcess(table.getSqlName()+" => "+table.getClassName(),isDelete);
 	        if(isDelete)
 	        	g.deleteBy(m.templateModel,m.filePathModel);
-	        else
-	        	g.generateBy(m.templateModel,m.filePathModel);
+	        else {
+                if(!isCommon) {
+                    //${basepackage}.${persistence}
+                    m.templateModel.put("mergePkg", m.templateModel.get("basepackage") + "." + m.templateModel.get("persistence"));
+                    m.templateModel.put("mergePkgService", m.templateModel.get("basepackage") + ".service");
+                    g.generateBy(m.templateModel, m.filePathModel, isCommon);
+                } else {
+                    m.templateModel.put("mergePkg", "cn.thinkjoy.common.managerui.dao");
+                    m.templateModel.put("mergePkgService", "cn.thinkjoy.common.managerui.service");
+                    g.generateBy(m.templateModel, m.filePathModel, isCommon);
+                }
+            }
 	    }
 
         public void processByTableList(String templateRootDir,boolean isDelete) throws Exception {
@@ -195,12 +242,39 @@ public class GeneratorFacade {
                 getGenerator(templateRootDir).deleteBy(m.templateModel,m.filePathModel);
             else
 //                g.generateBy(m.templateModel,m.filePathModel);
-                getGenerator(templateRootDir).generateBy(m.templateModel,m.filePathModel);
+                getGenerator(templateRootDir).generateBy(m.templateModel,m.filePathModel, false);
         }
     }
 
     @SuppressWarnings("all")
 	public static class GeneratorModelUtils {
+
+        private static class Actions{
+            private static List<Action> initList = new ArrayList<Action>();
+            static{
+                Action add = new Action("add", "新增");
+                initList.add(add);
+
+                add = new Action("edit", "修改");
+                initList.add(add);
+
+                add = new Action("del", "删除");
+                initList.add(add);
+
+                add = new Action("import", "导入数据");
+                initList.add(add);
+
+                add = new Action("export", "导出数据");
+                initList.add(add);
+
+                add = new Action("exportTpl", "导出模板");
+                initList.add(add);
+            }
+
+            public static List<Action> getActions(){
+                return initList;
+            }
+        }
 
 		public static GeneratorModel newFromTable(Table table) {
 			Map templateModel = new HashMap();
@@ -216,6 +290,36 @@ public class GeneratorFacade {
         public static GeneratorModel newFromTables(List<Table> tables) {
             Map templateModel = new HashMap();
             templateModel.put("tables", tables);
+
+            //yq add
+            List<Table> newtables = new ArrayList<Table>();
+            boolean isAlreay = false;
+            for(Table table : tables){
+                //允许我多占用一会cpu
+                for(String already : alreadyTbls){
+                    if(table.getSqlName().endsWith(already)){
+                        isAlreay = true;
+                        continue;
+                    }
+                }
+
+                if(!isAlreay) {
+                    newtables.add(table);
+                }
+                isAlreay = false;
+            }
+            templateModel.put("newtables", newtables);
+
+            //add by yq
+            templateModel.put("parentRes", TableFactory.getInstance().getAllParentRes());
+            templateModel.put("nums", NumGen.getMaps());
+            templateModel.put("numsize", NumGen.getMaps().size());
+
+            templateModel.put("actions", Actions.getActions());
+            templateModel.put("times", System.currentTimeMillis());
+            templateModel.put("bizSys", GeneratorProperties.getRequiredProperty("jdbc.databasename"));
+            templateModel.put("basepackage", GeneratorProperties.getRequiredProperty("basepackage"));
+
             setShareVars(templateModel);
 
             Map filePathModel = new HashMap();

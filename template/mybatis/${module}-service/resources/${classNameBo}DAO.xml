@@ -8,7 +8,7 @@
 <#macro jspEl value>${r"${"}${value}}</#macro>
 <#macro namespace>${basepackage}.${persistence}</#macro>
 
-<mapper namespace="${basepackage}.${persistence}.${className}DAO">
+<mapper namespace="${mergePkg}.I${className}DAO">
 <!--
 insert
 update

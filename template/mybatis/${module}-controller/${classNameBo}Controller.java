@@ -10,14 +10,9 @@
 
 package ${basepackage}.${persistence};
 
-
-import ${basepackage}.BaseService;
-import ${basepackage}.dao.ResourceGridDAO;
-import ${basepackage}.dao.UserDAO;
-import ${basepackage}.domain.${className};
-import ${basepackage}.domain.Resource;
-import ${basepackage}.domain.ResourceGrid;
-import ${basepackage}.service.${className}Service;
+import ${mergePkgService}.I${className}Service;
+import cn.thinkjoy.common.managerui.dao.IResourceGridDAO;
+import cn.thinkjoy.common.managerui.service.IResourceGridService;
 import cn.thinkjoy.common.domain.view.BizData4Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -34,12 +29,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import cn.thinkjoy.common.managerui.controller.AbstractAdminController;
+
 @Controller
-public class ${className}Controller extends AbstractAdminController<${className}Service>{
+@RequestMapping(value="/admin/${module}")
+public class ${className}Controller extends AbstractAdminController<I${className}Service>{
 
 
     @Autowired
-    private ${className}Service ${classNameLower}Service;
+    private I${className}Service ${classNameLower}Service;
 
     /**
      * 页面主请求
@@ -65,8 +63,13 @@ public class ${className}Controller extends AbstractAdminController<${className}
     }
 
     @Override
-    protected ${className}Service getMainService() {
+    protected I${className}Service getMainService() {
         return ${classNameLower}Service;
+    }
+
+    @Override
+    protected String getBizSys() {
+        return "${module}";
     }
 
     @Override
@@ -78,5 +81,10 @@ public class ${className}Controller extends AbstractAdminController<${className}
     protected String getViewTitle() {
 //        return "EHR-组织管理";
         return "";
+    }
+
+    @Override
+    public boolean getEnableDataPerm() {
+        return true;
     }
 }

@@ -11,7 +11,7 @@ package ${basepackage}.${persistence};
 import cn.thinkjoy.common.dao.IBaseDAO;
 import ${basepackage}.domain.${className};
 
-public interface ${className}DAO extends IBaseDAO<${className}>{
+public interface I${className}DAO extends IBaseDAO<${className}>{
 	
 <#list table.columns as column>
 	<#if (column.unique && !column.pk)>

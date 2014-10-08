@@ -136,8 +136,8 @@ public class Generator {
      * @param filePathModel 文件路径可以引用的变量
      * @throws Exception
      */
-	public Generator generateBy(Map templateModel,Map filePathModel) throws Exception {
-		processTemplateRootDirs(templateModel, filePathModel,false);
+	public Generator generateBy(Map templateModel,Map filePathModel, boolean isCommon) throws Exception {
+		processTemplateRootDirs(templateModel, filePathModel,false, isCommon);
 		return this;
 	}
 
@@ -149,23 +149,23 @@ public class Generator {
 	 * @throws Exception
 	 */
     public Generator deleteBy(Map templateModel,Map filePathModel) throws Exception {
-    	processTemplateRootDirs(templateModel, filePathModel,true);
+    	processTemplateRootDirs(templateModel, filePathModel,true, false);
     	return this;
     }	
 	
-	private void processTemplateRootDirs(Map templateModel,Map filePathModel,boolean isDelete) throws Exception {
+	private void processTemplateRootDirs(Map templateModel,Map filePathModel,boolean isDelete, boolean isCommon) throws Exception {
 	    if(StringHelper.isBlank(getOutRootDir())) throw new IllegalStateException("'outRootDir' property must be not null.");
 		if(templateRootDirs.size() == 0) throw new IllegalStateException("'templateRootDirs' cannot empty");
 		GeneratorException ge = new GeneratorException("generator occer error, Generator BeanInfo:"+BeanHelper.describe(this));
 		for(int i = 0; i < this.templateRootDirs.size(); i++) {
 			File templateRootDir = (File)templateRootDirs.get(i);
-			List<Exception> exceptions = scanTemplatesAndProcess(templateRootDir,templateModel,filePathModel,isDelete);
+			List<Exception> exceptions = scanTemplatesAndProcess(templateRootDir,templateModel,filePathModel,isDelete, isCommon);
 			ge.addAll(exceptions); 
 		}
 		if(!ge.exceptions.isEmpty()) throw ge;
 	}
 	
-	private List<Exception> scanTemplatesAndProcess(File templateRootDir, Map templateModel,Map filePathModel,boolean isDelete) throws Exception {
+	private List<Exception> scanTemplatesAndProcess(File templateRootDir, Map templateModel,Map filePathModel,boolean isDelete, boolean isCommon) throws Exception {
 		if(templateRootDir == null) throw new IllegalStateException("'templateRootDir' must be not null");
 		GLogger.println("-------------------load template from templateRootDir = '"+templateRootDir.getAbsolutePath()+"' outRootDir:"+new File(outRootDir).getAbsolutePath());
 		
@@ -174,20 +174,40 @@ public class Generator {
 		List<Exception> exceptions = new ArrayList();
 		for(int i = 0; i < srcFiles.size(); i++) {
 			File srcFile = (File)srcFiles.get(i);
-			try {
-			    if(isDelete){
-			        new TemplateProcessor().executeDelete(templateRootDir, templateModel,filePathModel, srcFile);
-			    }else {
-			        new TemplateProcessor().executeGenerate(templateRootDir, templateModel,filePathModel, srcFile);
-			    }
-			}catch(Exception e) {
-				if (ignoreTemplateGenerateException) {
-			        GLogger.warn("iggnore generate error,template is:" + srcFile+" cause:"+e);
-			        exceptions.add(e);
-			    } else {
-					throw e;
-			    }
-			}
+
+            if(isCommon){  //只执行DAO.xml模板   **Controller.java
+                if(srcFile.getName().endsWith("DAO.xml") || (srcFile.getName().endsWith("Controller.java") && !srcFile.getName().endsWith("CommonController.java"))){
+                    try {
+                        if (isDelete) {
+                            new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
+                        } else {
+                            new TemplateProcessor().executeGenerate(templateRootDir, templateModel, filePathModel, srcFile);
+                        }
+                    } catch (Exception e) {
+                        if (ignoreTemplateGenerateException) {
+                            GLogger.warn("iggnore generate error,template is:" + srcFile + " cause:" + e);
+                            exceptions.add(e);
+                        } else {
+                            throw e;
+                        }
+                    }
+                }
+            } else {
+                try {
+                    if (isDelete) {
+                        new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
+                    } else {
+                        new TemplateProcessor().executeGenerate(templateRootDir, templateModel, filePathModel, srcFile);
+                    }
+                } catch (Exception e) {
+                    if (ignoreTemplateGenerateException) {
+                        GLogger.warn("iggnore generate error,template is:" + srcFile + " cause:" + e);
+                        exceptions.add(e);
+                    } else {
+                        throw e;
+                    }
+                }
+            }
 		}
 		return exceptions;
 	}

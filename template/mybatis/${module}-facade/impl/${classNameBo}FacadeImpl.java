@@ -14,7 +14,7 @@ import ${basepackage}.facade.${className}Facade;
 import ${basepackage}.service.${className}Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ${className}FacadeImpl implements ${className}Facade {
+public class ${className}FacadeImpl implements I${className}Facade {
     @Autowired
     private ${className}Service ${classNameLower}Service;
 
