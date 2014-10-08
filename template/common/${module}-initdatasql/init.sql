@@ -12,7 +12,7 @@ VALUES('${table.seq}','${table.name}','${table.sqlName}','${table.description}')
 <#assign prId = parentRes[key].seq>
 <#assign prNumber = parentRes[key].number>
 INSERT INTO `${module}_resource`(`id`,`url`,`orderNum`,`parentId`,`number`,`longNumber`,`name`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`modelId`, `bizModelName`)
-VALUES('${prId}','/admin/${bizSys}/${key}','${prId}',null,'${prNumber}','${prNumber}','${key}',0,${times},0,${times},null,null, null);
+VALUES('${prId}','/admin/${bizSys}/${key}','${prId}',null,'${prNumber}','${prNumber}','${key}',0,${times},0,${times},null,null, '');
 </#list>
 
 -- resource
