@@ -76,6 +76,24 @@ selectList
         id = <@mapperEl 'map.id'/>
     </update>
 
+    <update id="updateByCondition">
+        UPDATE ${table.sqlName}
+        <trim prefix="SET" suffixOverrides=",">
+            <#list table.notPkColumns as column>
+            <if test="update.${column.columnNameFirstLower}!=null">
+                ${column.sqlName} = <@mapperEl 'update.'+column.columnNameFirstLower />,
+            </if>
+        </#list>
+        </trim>
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+        <#list table.columns as column>
+            <if test="condition.${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@mapperEl 'condition.' + column.columnNameFirstLower/>
+            </if>
+        </#list>
+        </trim>
+    </update>
 
     <insert id="insertMap" >
         INSERT INTO ${table.sqlName} (

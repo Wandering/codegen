@@ -7,8 +7,8 @@
 		2.可以引用环境变量: ${env.JAVA_HOME} or System.properties: ${user.home},property之间也可以相互引用
 	</comment>
 
-    <entry key="module">ucm</entry>
-	<entry key="basepackage">cn.thinkjoy.ucm</entry>
+    <entry key="module">mubs</entry>
+	<entry key="basepackage">cn.thinkjoy.mubs</entry>
 	<entry key="persistence">dao</entry>
 	
 	<!-- jsp namespace: web/${namespace}/${className}/list.jsp -->
@@ -33,8 +33,8 @@
 	<entry key="java_typemapping.java.sql.Clob">java.lang.String</entry>
 	
 	<!-- Mysql -->
-    <entry key="jdbc.databasename">ucm</entry>
-	<entry key="jdbc.url">jdbc:mysql://172.16.120.111:3306/ucm?useUnicode=true&amp;characterEncoding=UTF-8</entry>
+    <entry key="jdbc.databasename">mubs</entry>
+	<entry key="jdbc.url">jdbc:mysql://172.16.120.111:3306/mubs?useUnicode=true&amp;characterEncoding=UTF-8</entry>
 	<entry key="jdbc.driver">com.mysql.jdbc.Driver</entry>
 	<entry key="jdbc.username">root</entry>
 	<entry key="jdbc.password">weixiao123</entry>
