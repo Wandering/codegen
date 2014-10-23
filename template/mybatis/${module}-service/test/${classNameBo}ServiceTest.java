@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:springme.xml")
-public class I${className}ServiceTest{
+public class ${className}ServiceTest{
     @Autowired
     private I${className}Service ${classNameLower}Service;
 
