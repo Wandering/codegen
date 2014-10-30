@@ -27,7 +27,7 @@ VALUES('${prId}','/admin/${bizSys}/${key}','${prId}',null,'${prNumber}','${prNum
 
 
 INSERT INTO `${module}_resource`(`id`,`url`,`orderNum`,`parentId`,`number`,`longNumber`,`name`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`modelId`, `bizModelName`)
-VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${table.parentId}','${table.number}','${table.longnumber}','${table.name}',0,${times},0,${times},null,'${table.seq}', '${classNameAllLower}');
+VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${table.parentId}','${table.number}','${table.longnumber}','${table.resName}',0,${times},0,${times},null,'${table.seq}', '${classNameAllLower}');
 
   <#assign className = table.classNameBo>
   <#assign classNameFirstLower = table.classNameFirstLower>
