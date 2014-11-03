@@ -18,12 +18,12 @@
     <dubbo:registry address="${'$'}{dubbo_zk_url}"/>
 
     <#list newtables as table>
-    <bean id="${table.classNameBo}ServiceImpl" class="${basepackage}.service.${table.classNameBo}ServiceImpl" />
+    <bean id="${table.classNameBo}ServiceImpl" class="${basepackage}.service.impl.${table.classNameBo}ServiceImpl" />
     <dubbo:service id="${table.instanceName}Service" interface="${basepackage}.service.${table.className}Service" ref="${table.classNameBo}ServiceImpl"/>
     </#list>
 
     <#list newtables as table>
-    <bean id="${table.classNameBo}FacadeImpl" class="${basepackage}.facade.${table.classNameBo}FacadeImpl" />
+    <bean id="${table.classNameBo}FacadeImpl" class="${basepackage}.facade.impl.${table.classNameBo}FacadeImpl" />
     <dubbo:service id="${table.instanceName}Facade" interface="${basepackage}.facade.${table.className}Facade" ref="${table.classNameBo}FacadeImpl"/>
     </#list>
 

@@ -10,13 +10,15 @@
 <#include "/macro.include"/>
 package ${basepackage}.facade.impl;
 
-import ${basepackage}.facade.${className}Facade;
-import ${basepackage}.service.${className}Service;
+import ${basepackage}.facade.I${className}Facade;
+import ${basepackage}.service.I${className}Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service("${className}FacadeImpl")
 public class ${className}FacadeImpl implements I${className}Facade {
     @Autowired
-    private ${className}Service ${classNameLower}Service;
+    private I${className}Service ${classNameLower}Service;
 
 
 //    @Transactional(propagation = Propagation.REQUIRED)
