@@ -33,7 +33,7 @@ import java.util.*;
 
 public class ${className} extends <#if isCbd>CreateBaseDomain<#else>BaseDomain</#if>{
 <#list table.columns as column>
-<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
+<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'||column='status'>
 <#else>
     private ${column.possibleShortJavaType} ${column.columnNameFirstLower};
 </#if>
@@ -77,7 +77,7 @@ public class ${className} extends <#if isCbd>CreateBaseDomain<#else>BaseDomain</
     <#if column.isDateTimeColumn>
 
     </#if>
-<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
+<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'||column='status'>
 <#else>
     public void set${column.columnName}(${column.possibleShortJavaType} value) {
         this.${column.columnNameFirstLower} = value;
