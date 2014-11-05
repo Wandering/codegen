@@ -175,8 +175,8 @@ public class Generator {
 		for(int i = 0; i < srcFiles.size(); i++) {
 			File srcFile = (File)srcFiles.get(i);
 
-            if(isCommon){  //只执行DAO.xml模板   **Controller.java
-                if(srcFile.getName().endsWith("DAO.xml") || (srcFile.getName().endsWith("Controller.java") && !srcFile.getName().endsWith("CommonController.java"))){
+            if(isCommon){  //只执行DAO.xml模板   **Controller.java   ***.ftl  （managerui-startup中不需要这些特定的模板）
+                if(srcFile.getName().endsWith("DAO.xml") || srcFile.getName().endsWith(".ftl") || (srcFile.getName().endsWith("Controller.java") && !srcFile.getName().endsWith("CommonController.java"))){
                     try {
                         if (isDelete) {
                             new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
