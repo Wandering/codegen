@@ -79,8 +79,12 @@ public class ${className}Controller extends AbstractAdminController<I${className
 
     @Override
     protected String getViewTitle() {
-//        return "EHR-组织管理";
-        return "";
+        return "${table.resName}";
+    }
+
+    @Override
+    protected String getParentTitle() {
+        return "${table.parentResName}";
     }
 
     @Override
