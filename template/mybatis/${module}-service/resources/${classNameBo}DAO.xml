@@ -5,6 +5,7 @@
 <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 <#assign idJavaType = table.idColumn.javaType>
 <#macro mapperEl value>${r"#{"}${value}}</#macro>
+<#macro conditionMapperEl value>${r"#{condition."}${value}}</#macro>
 <#macro jspEl value>${r"${"}${value}}</#macro>
 <#macro namespace>${basepackage}.${persistence}</#macro>
 
@@ -216,8 +217,8 @@ selectList
         FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
-            <if test="${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>
+            <if test="condition.${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@conditionMapperEl column.columnNameFirstLower/>
             </if>
             </#list>
         </trim>
