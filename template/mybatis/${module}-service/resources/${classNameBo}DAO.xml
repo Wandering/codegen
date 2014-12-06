@@ -46,6 +46,9 @@ selectList
         <@mapperEl column.columnNameFirstLower/><#if column_has_next>,</#if>
         </#list>
         )
+        <selectKey resultType="java.lang.Long" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
     </insert>
 
     <!-- 更新 -->
