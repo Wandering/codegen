@@ -207,7 +207,7 @@ selectList
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} like '%<@mapperEl column.columnNameFirstLower/>%'
+                AND ${column.sqlName} like CONCAT('%', <@mapperEl column.columnNameFirstLower/> , '%')
             </if>
             </#list>
         </trim>
