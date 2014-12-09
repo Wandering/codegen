@@ -193,7 +193,15 @@ selectList
             <if test="condition.whereSql != null">
                 and id in (<@mapperEl 'condition.whereSql'/>)
             </if>
-        </where>
+
+            <#list table.columns as column>
+            <if test="condition.${column.columnNameFirstLower}!=null">
+                 <@mapperEl 'condition.groupOp'/> ${column.sqlName}   <@mapperEl 'condition.' + column.sqlName+'.op'/>  <@mapperEl 'condition.' + column.sqlName+'.data'/>
+            </if>
+           </#list>
+
+
+    </where>
 
         <if test="offset != null">
             limit <@jspEl 'offset'/>, <@jspEl 'rows'/>
@@ -244,6 +252,15 @@ selectList
 
     <select id="count" resultType="java.lang.Integer">
         SELECT count(${table.idColumn.sqlName}) FROM ${table.sqlName}
+       <where>
+           <#list table.columns as column>
+           <if test="${column.columnNameFirstLower}!=null">
+               <@mapperEl 'groupOp'/> ${column.sqlName} <@mapperEl column.sqlName+'.op'/>  <@mapperEl column.sqlName+'.data'/>
+           </if>
+       </#list>
+
+       </where>
+
     </select>
 
     <select id="selectMaxId" resultType="${idJavaType}">
