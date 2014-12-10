@@ -29,7 +29,9 @@ import cn.org.rapid_framework.generator.util.GeneratorException;
  */
 public class GeneratorFacade {
 
-    private static String[] alreadyTbls = new String[]{"_data_model", "_model", "_resource", "_resource_action", "_resource_grid", "_role", "_role_resource", "_role_user", "_user_data"};
+    private static String[] alreadyTbls = new String[]{
+			"_data_model", "_model", "_resource", "_resource_action", "_resource_grid",
+			"_role", "_role_resource", "_role_user", "_user_data", "_datagroup", "_datagroup_data", "_user_datagroup"};
 
 
 	public Generator g = new Generator();
