@@ -1,0 +1,273 @@
+<#include "/macro.include"/>
+<#assign className = table.classNameBo>
+<#assign classNameFirstLower = table.classNameFirstLower>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<#assign idJavaType = table.idColumn.javaType>
+<#macro mapperEl value>${r"#{"}${value}}</#macro>
+<#macro conditionMapperEl value>${r"#{condition."}${value}}</#macro>
+<#macro jspEl value>${r"${"}${value}}</#macro>
+<#macro namespace>${basepackage}.${persistence}</#macro>
+
+<mapper namespace="${mergePkg}.I${className}DAO">
+<!--
+insert
+update
+updateNull
+deleteById
+deleteByCondition
+deleteByProperty
+fetch
+findOne
+findList
+findAll
+queryPage
+like
+queryList
+queryOne
+count
+selectMaxId
+updateOrSave
+selectOne
+selectList
+-->
+    <sql id="Base_Column_List">
+        <#list table.columns as _column>
+        ${_column.sqlName}<#if _column_has_next>,</#if>
+        </#list>
+    </sql>
+    <insert id="insert" parameterType="${className}">
+        INSERT INTO ${table.sqlName} (
+        <#list table.columns as column>
+        ${column.sqlName}<#if column_has_next>,</#if>
+        </#list>
+        ) VALUES (
+        <#list table.columns as column>
+        <@mapperEl column.columnNameFirstLower/><#if column_has_next>,</#if>
+        </#list>
+        )
+        <selectKey resultType="java.lang.Long" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="${className}">
+        UPDATE ${table.sqlName}
+        <trim prefix="SET" suffixOverrides=",">
+            <#list table.notPkColumns as column>
+            <if test="${column.columnNameFirstLower}!=null">
+                ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>,
+            </if>
+            </#list>
+        </trim>
+        WHERE
+        <#list table.compositeIdColumns as column>
+        ${column.sqlName} = <@mapperEl column.columnNameFirstLower/><#if column_has_next> AND </#if>
+        </#list>
+    </update>
+
+    <update id="updateMap">
+        UPDATE ${table.sqlName}
+        <trim prefix="SET" suffixOverrides=",">
+            <#list table.notPkColumns as column>
+            <if test="map.${column.columnNameFirstLower}!=null">
+                ${column.sqlName} = <@mapperEl 'map.'+column.columnNameFirstLower />,
+            </if>
+            </#list>
+        </trim>
+        WHERE
+        id = <@mapperEl 'map.id'/>
+    </update>
+
+    <update id="updateByCondition">
+        UPDATE ${table.sqlName}
+        <trim prefix="SET" suffixOverrides=",">
+            <#list table.notPkColumns as column>
+            <if test="update.${column.columnNameFirstLower}!=null">
+                ${column.sqlName} = <@mapperEl 'update.'+column.columnNameFirstLower />,
+            </if>
+        </#list>
+        </trim>
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+        <#list table.columns as column>
+            <if test="condition.${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@mapperEl 'condition.' + column.columnNameFirstLower/>
+            </if>
+        </#list>
+        </trim>
+    </update>
+
+    <insert id="insertMap" >
+        INSERT INTO ${table.sqlName} (
+            <#list table.columns as column>
+                ${column.sqlName}<#if column_has_next>,</#if>
+            </#list>
+        ) VALUES (
+            <#list table.columns as column>
+                <@mapperEl 'map.'+column.columnNameFirstLower /><#if column_has_next>,</#if>
+            </#list>
+        )
+    </insert>
+
+
+    <update id="updateNull" parameterType="${className}">
+        UPDATE ${table.sqlName}
+        <trim prefix="SET" suffixOverrides=",">
+            <#list table.notPkColumns as column>
+            ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>,
+            </#list>
+        </trim>
+        WHERE
+        <#list table.compositeIdColumns as column>
+        ${column.sqlName} = <@mapperEl column.columnNameFirstLower/> <#if column_has_next> AND </#if>
+        </#list>
+    </update>
+
+    <!-- 按Id删除 -->
+    <delete id="deleteById" parameterType="${idJavaType}">
+        DELETE FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.compositeIdColumns as column>
+            AND ${column.sqlName} = <@mapperEl 'id'/>
+            </#list>
+        </trim>
+    </delete>
+
+
+    <delete id="deleteByCondition" parameterType="java.util.Map">
+        DELETE FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.columns as column>
+            <if test="${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>
+            </if>
+            </#list>
+        </trim>
+    </delete>
+
+    <delete id="deleteByProperty" parameterType="java.util.Map">
+        DELETE FROM ${table.sqlName} WHERE
+        <@jspEl 'property'/> = <@mapperEl 'value'/>
+    </delete>
+
+    <select id="fetch" parameterType="${idJavaType}" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.compositeIdColumns as column>
+            AND ${column.sqlName} = <@mapperEl 'id'/>
+            </#list>
+        </trim>
+    </select>
+
+    <select id="findOne" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName} WHERE
+        <@jspEl 'property'/> = <@mapperEl 'value'/>
+        LIMIT 0,1
+    </select>
+
+    <select id="findList" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName} WHERE
+        <@jspEl 'property'/> = <@mapperEl 'value'/>
+    </select>
+
+    <select id="findAll" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+    </select>
+
+    <select id="queryPage" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <where>
+
+            <if test="condition.whereSql != null">
+                and id in (<@mapperEl 'condition.whereSql'/>)
+            </if>
+
+            <#list table.columns as column>
+            <if test="condition.${column.columnNameFirstLower}!=null">
+                <@jspEl 'condition.groupOp'/>   ${column.sqlName}  <@jspEl 'condition.' + column.sqlName+'.op'/>  <@mapperEl 'condition.' + column.sqlName+'.data'/>
+            </if>
+           </#list>
+
+
+    </where>
+
+        <if test="offset != null">
+            limit <@jspEl 'offset'/>, <@jspEl 'rows'/>
+        </if>
+    </select>
+
+    <select id="like" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.columns as column>
+            <if test="${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} like CONCAT('%', <@mapperEl column.columnNameFirstLower/> , '%')
+            </if>
+            </#list>
+        </trim>
+    </select>
+
+
+    <select id="queryList" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.columns as column>
+            <if test="condition.${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@conditionMapperEl column.columnNameFirstLower/>
+            </if>
+            </#list>
+        </trim>
+        ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
+    </select>
+
+    <select id="queryOne" parameterType="java.util.Map" resultType="${className}">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.sqlName}
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <#list table.columns as column>
+            <if test="${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>
+            </if>
+            </#list>
+        </trim>
+        limit 0,1
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(${table.idColumn.sqlName}) FROM ${table.sqlName}
+       <where>
+           <#list table.columns as column>
+           <if test="${column.columnNameFirstLower}!=null">
+               <@jspEl 'groupOp'/> ${column.sqlName} <@jspEl column.sqlName+'.op'/>  <@mapperEl column.sqlName+'.data'/>
+           </if>
+       </#list>
+
+       </where>
+
+    </select>
+
+    <select id="selectMaxId" resultType="${idJavaType}">
+        SELECT
+        MAX(id)
+        FROM ${table.sqlName}
+    </select>
+
+</mapper>
+
