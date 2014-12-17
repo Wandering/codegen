@@ -39,11 +39,15 @@ selectList
     <insert id="insert" parameterType="${className}">
         INSERT INTO ${table.sqlName} (
         <#list table.columns as column>
+        <#if "id"!=column>
         ${column.sqlName}<#if column_has_next>,</#if>
+        </#if>
         </#list>
         ) VALUES (
         <#list table.columns as column>
+        <#if "id"!=column>
         <@mapperEl column.columnNameFirstLower/><#if column_has_next>,</#if>
+        </#if>
         </#list>
         )
         <selectKey resultType="java.lang.Long" keyProperty="id">
