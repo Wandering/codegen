@@ -237,7 +237,9 @@ selectList
             </if>
             </#list>
         </trim>
+        <if test="orderBy!=null">
         ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
+        </if>
     </select>
 
     <select id="queryOne" parameterType="java.util.Map" resultType="${className}">
