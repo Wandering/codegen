@@ -106,11 +106,15 @@ selectList
     <insert id="insertMap" >
         INSERT INTO ${table.sqlName} (
             <#list table.columns as column>
+            <#if "id"!=column>
                 ${column.sqlName}<#if column_has_next>,</#if>
+            </#if>
             </#list>
         ) VALUES (
             <#list table.columns as column>
-                <@mapperEl 'map.'+column.columnNameFirstLower /><#if column_has_next>,</#if>
+                <#if "id"!=column>
+                    <@mapperEl 'map.'+column.columnNameFirstLower /><#if column_has_next>,</#if>
+                </#if>
             </#list>
         )
     </insert>
