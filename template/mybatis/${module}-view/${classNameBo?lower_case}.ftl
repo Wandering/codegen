@@ -1,4 +1,5 @@
 <#macro mapperEl_include value>${r'<#include "'}${value}${r'">'}</#macro>
+<#assign classNameAllLower = table.classNameBo?lower_case>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,9 +25,9 @@
     <@mapperEl_include "breadcrumbs.ftl"/>
 
         <!-- /section:basics/content.breadcrumbs -->
-        <div class="page-content">
-        <@mapperEl_include "page_grid.ftl"/>
-        </div><!-- /.page-content -->
+
+        <@mapperEl_include "/module/custome/${classNameAllLower}_page_grid.ftl"/>
+
     </div><!-- /.main-content -->
 
 <@mapperEl_include "footer.html"/>
@@ -34,6 +35,6 @@
         <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
     </a>
 </div><!-- /.main-container -->
-<@mapperEl_include "biz_script.ftl"/>
+<@mapperEl_include "/module/custome/script/${classNameAllLower}_biz_script.ftl"/>
 </body>
 </html>
