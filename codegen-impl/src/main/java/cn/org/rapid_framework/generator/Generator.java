@@ -22,6 +22,8 @@ import cn.org.rapid_framework.generator.util.GLogger;
 import cn.org.rapid_framework.generator.util.GeneratorException;
 import cn.org.rapid_framework.generator.util.IOHelper;
 import cn.org.rapid_framework.generator.util.StringHelper;
+import cn.thinkjoy.codegen.*;
+import cn.thinkjoy.codegen.GeneratorMain;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.template.Configuration;
@@ -178,11 +180,26 @@ public class Generator {
             if(isCommon){  //只执行DAO.xml模板   **Controller.java   ***.ftl  （managerui-startup中不需要这些特定的模板）
                 if(srcFile.getName().endsWith("DAO.xml") || srcFile.getName().endsWith(".ftl") || (srcFile.getName().endsWith("Controller.java") && !srcFile.getName().endsWith("CommonController.java"))){
                     try {
-                        if (isDelete) {
-                            new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
-                        } else {
-                            new TemplateProcessor().executeGenerate(templateRootDir, templateModel, filePathModel, srcFile);
-                        }
+						if(GeneratorMain.isStandard) {
+							if (isDelete) {
+								new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
+							} else {
+								new TemplateProcessor().executeGenerate(templateRootDir, templateModel, filePathModel, srcFile);
+							}
+						} else {
+							//非标准 不生成 controller 、 view、 initsql、commmon
+							String parentDir = srcFile.getParent();
+
+							if(parentDir.endsWith("-controller") || parentDir.endsWith("-view") || parentDir.endsWith("-initsql")){
+
+							} else {
+								if (isDelete) {
+									new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
+								} else {
+									new TemplateProcessor().executeGenerate(templateRootDir, templateModel, filePathModel, srcFile);
+								}
+							}
+						}
                     } catch (Exception e) {
                         if (ignoreTemplateGenerateException) {
                             GLogger.warn("iggnore generate error,template is:" + srcFile + " cause:" + e);
@@ -194,11 +211,26 @@ public class Generator {
                 }
             } else {
                 try {
-                    if (isDelete) {
-                        new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
-                    } else {
-                        new TemplateProcessor().executeGenerate(templateRootDir, templateModel, filePathModel, srcFile);
-                    }
+					if(GeneratorMain.isStandard) {
+						if (isDelete) {
+							new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
+						} else {
+							new TemplateProcessor().executeGenerate(templateRootDir, templateModel, filePathModel, srcFile);
+						}
+					} else {
+						//非标准 不生成 controller 、 view、 initsql、commmon
+						String parentDir = srcFile.getParent();
+
+						if(parentDir.endsWith("-controller") || parentDir.endsWith("-view") || parentDir.endsWith("-initsql")){
+
+						} else {
+							if (isDelete) {
+								new TemplateProcessor().executeDelete(templateRootDir, templateModel, filePathModel, srcFile);
+							} else {
+								new TemplateProcessor().executeGenerate(templateRootDir, templateModel, filePathModel, srcFile);
+							}
+						}
+					}
                 } catch (Exception e) {
                     if (ignoreTemplateGenerateException) {
                         GLogger.warn("iggnore generate error,template is:" + srcFile + " cause:" + e);

@@ -30,6 +30,8 @@ import cn.org.rapid_framework.generator.util.GLogger;
 import cn.org.rapid_framework.generator.util.StringHelper;
 import cn.org.rapid_framework.generator.util.XMLHelper;
 import cn.org.rapid_framework.generator.util.XMLHelper.NodeData;
+import cn.thinkjoy.codegen.GeneratorMain;
+
 /**
  * 
  * 根据数据库表的元数据(metadata)创建Table对象
@@ -146,19 +148,24 @@ public class TableFactory {
 
             ParentRes parentRes = null;
             if(remarks != null && remarks.length() > 0){
-                String[] lines = remarks.split("\\n");
-                table.setDescription(lines[1]);
-                String[] comments = lines[0].split("\\|");
-                table.setName(comments[0]);
-                table.setResName(comments[1]);
-                table.setParentResName(comments[2]);
-                if(comments[3] != null) {
-                    table.setParentClassName(comments[3]);
-                } else {
-                    table.setParentClassName("BaseDomain");
-                }
+				String[] comments = null;
+				if(GeneratorMain.isStandard) {
+					String[] lines = remarks.split("\\n");
+					table.setDescription(lines[1]);
+					comments = lines[0].split("\\|");
+					table.setName(comments[0]);
+					table.setResName(comments[1]);
+					table.setParentResName(comments[2]);
+					if (comments[3] != null) {
+						table.setParentClassName(comments[3]);
+					} else {
+						table.setParentClassName("BaseDomain");
+					}
+				} else {
+					table.setParentClassName("BaseDomain");
+				}
 
-                if(parentResMap.get(comments[2]) == null) {
+                if(comments != null && parentResMap.get(comments[2]) == null) {
                     parentRes = new ParentRes();
                     parentRes.setName(comments[2]);
                     parentRes.setSeq(SeqGen.incr(SeqGen.MODEL));
@@ -217,9 +224,10 @@ public class TableFactory {
             for(Table table : tables){
                 table.setSeq(SeqGen.incr(SeqGen.MODEL));
                 table.setNumber(NumGen.genNum(table.getSeq()));
-                table.setLongnumber(parentResMap.get(table.getParentResName()).getNumber() + "_" + table.getNumber());
-                table.setParentId(parentResMap.get(table.getParentResName()).getSeq());
-
+				if(GeneratorMain.isStandard) {
+					table.setLongnumber(parentResMap.get(table.getParentResName()).getNumber() + "_" + table.getNumber());
+					table.setParentId(parentResMap.get(table.getParentResName()).getSeq());
+				}
                 splits = table.getSqlName().split("_");
                 for(int i = 1; i < splits.length; i++){
                     className += splits[i].replaceFirst(String.valueOf(splits[i].charAt(0)), String.valueOf(splits[i].charAt(0)).toUpperCase());
