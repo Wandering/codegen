@@ -35,6 +35,7 @@ public class ${className} extends <#if isCbd>CreateBaseDomain<#else>BaseDomain</
 <#list table.columns as column>
 <#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'||column='status'>
 <#else>
+    /** ${column.remarks} */
     private ${column.possibleShortJavaType} ${column.columnNameFirstLower};
 </#if>
 </#list>
