@@ -176,6 +176,9 @@ selectList
         <include refid="Base_Column_List" />
         FROM ${table.sqlName} WHERE
         <@jspEl 'property'/> = <@mapperEl 'value'/>
+        <if test="orderBy!=null">
+            ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
+        </if>
         LIMIT 0,1
     </select>
 
@@ -184,12 +187,18 @@ selectList
         <include refid="Base_Column_List" />
         FROM ${table.sqlName} WHERE
         <@jspEl 'property'/> = <@mapperEl 'value'/>
+        <if test="orderBy!=null">
+            ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
+        </if>
     </select>
 
     <select id="findAll" resultType="${className}">
         SELECT
         <include refid="Base_Column_List" />
         FROM ${table.sqlName}
+        <if test="orderBy!=null">
+            ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
+        </if>
     </select>
 
     <select id="queryPage" resultType="${className}">
@@ -210,7 +219,9 @@ selectList
 
 
     </where>
-
+        <if test="orderBy!=null">
+        ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
+        </if>
         <if test="offset != null">
             limit <@jspEl 'offset'/>, <@jspEl 'rows'/>
         </if>
@@ -222,11 +233,14 @@ selectList
         FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
-            <if test="${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} like CONCAT('%', <@mapperEl column.columnNameFirstLower/> , '%')
+            <if test="condition.${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} like CONCAT('%', <@mapperEl 'condition.' + column.columnNameFirstLower/> , '%')
             </if>
             </#list>
         </trim>
+        <if test="orderBy!=null">
+        ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
+        </if>
     </select>
 
 
@@ -252,11 +266,14 @@ selectList
         FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
-            <if test="${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>
+            <if test="condition.${column.columnNameFirstLower}!=null">
+                AND ${column.sqlName} = <@conditionMapperEl column.columnNameFirstLower/>
             </if>
             </#list>
         </trim>
+        <if test="orderBy!=null">
+        ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
+        </if>
         limit 0,1
     </select>
 
@@ -270,7 +287,6 @@ selectList
        </#list>
 
        </where>
-
     </select>
 
     <select id="selectMaxId" resultType="${idJavaType}">
