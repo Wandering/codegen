@@ -4,7 +4,8 @@ import cn.org.rapid_framework.generator.GeneratorFacade;
 import cn.org.rapid_framework.generator.GeneratorProperties;
 import com.google.common.io.Files;
 
-import java.io.File;
+import java.io.*;
+import java.nio.charset.Charset;
 
 
 /**
@@ -14,7 +15,7 @@ import java.io.File;
  */
 
 public class GeneratorMain {
-	public static final boolean isStandard = false;
+	public static final boolean isStandard = true;
 	/**
 	 * 请直接修改以下代码调用不同的方法以执行相关生成任务.
 	 */
@@ -32,7 +33,7 @@ public class GeneratorMain {
 		}
 
 
-		if(false) {
+		if(true) {
 			//yq add 进行对应的文件拷贝
 			String startupDir = GeneratorProperties.getRequiredProperty("startupDir");
 			String autoGenProject = startupDir + "-autogen/managerui-biz-startup";
@@ -46,9 +47,23 @@ public class GeneratorMain {
 			File parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			File sourceDir = new File(outRoot + "/" + module + "-domain");
+
 			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                if(file.isFile()) {
+                    Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                }
 			}
+
+            //docs 下的多文件进行合并
+            File allDocsFile = new File(outRoot + "/" + module + "-domain/docs/all.html");
+            Appendable allDocsFileAppendable = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(allDocsFile)));
+            sourceDir = new File(outRoot + "/" + module + "-domain/docs");
+            if(sourceDir.exists()){
+                for (File file : sourceDir.listFiles()) {
+                    Files.copy(file, Charset.defaultCharset(), allDocsFileAppendable);
+                    ((Flushable) allDocsFileAppendable).flush();
+                }
+            }
 
 			//dao拷贝
 			parentDirStr = autoGenProject + "/mubs-service/src/main/java/" + basePackageDir + "/dao";
