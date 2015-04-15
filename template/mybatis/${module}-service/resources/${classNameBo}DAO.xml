@@ -213,7 +213,7 @@ selectList
 
             <#list table.columns as column>
             <if test="condition.${column.columnNameFirstLower}!=null">
-                <@jspEl 'condition.groupOp'/>   ${column.sqlName}  <@jspEl 'condition.' + column.sqlName+'.op'/>  <@mapperEl 'condition.' + column.sqlName+'.data'/>
+                <@jspEl 'condition.groupOp'/>   ${column.sqlName}  <@jspEl 'condition.' + column.columnNameFirstLower+'.op'/>  <@mapperEl 'condition.' + column.columnNameFirstLower+'.data'/>
             </if>
            </#list>
 
@@ -282,7 +282,7 @@ selectList
        <where>
            <#list table.columns as column>
            <if test="${column.columnNameFirstLower}!=null">
-               <@jspEl 'groupOp'/> ${column.sqlName} <@jspEl column.sqlName+'.op'/>  <@mapperEl column.sqlName+'.data'/>
+               <@jspEl 'groupOp'/> ${column.sqlName} <@jspEl column.columnNameFirstLower+'.op'/>  <@mapperEl column.columnNameFirstLower+'.data'/>
            </if>
        </#list>
 
