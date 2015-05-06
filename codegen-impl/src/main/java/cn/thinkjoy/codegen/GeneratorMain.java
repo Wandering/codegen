@@ -170,7 +170,9 @@ public class GeneratorMain {
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-controller");
 			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                if(!"RoleController".equals(file.getName()) || !"UserController".equals(file.getName())) {
+                    Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                }
 			}
 
 			//war-ftl拷贝
@@ -180,7 +182,9 @@ public class GeneratorMain {
 			sourceDir = new File(outRoot + "/" + module + "-view");
 			for (File file : sourceDir.listFiles()) {
 				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                    if(!"role.ftl".equals(file.getName()) || !"user.ftl".equals(file.getName())) {
+                        Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                    }
 				}
 			}
 
@@ -191,7 +195,9 @@ public class GeneratorMain {
 			sourceDir = new File(outRoot + "/" + module + "-view/custome");
 			for (File file : sourceDir.listFiles()) {
 				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                    if(!"role_page_grid.ftl".equals(file.getName()) || !"user_page_grid.ftl".equals(file.getName())) {
+                        Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                    }
 				}
 			}
 
@@ -202,7 +208,9 @@ public class GeneratorMain {
 			sourceDir = new File(outRoot + "/" + module + "-view/custome/script");
 			for (File file : sourceDir.listFiles()) {
 				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                    //if(!"role_biz_script.ftl".equals(file.getName()) || !"user_biz_script.ftl".equals(file.getName())) {
+                        Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                    //}
 				}
 			}
 
@@ -213,7 +221,9 @@ public class GeneratorMain {
 			sourceDir = new File(outRoot + "/" + module + "-view/custome/js");
 			for (File file : sourceDir.listFiles()) {
 				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                    //if(!"biz_role.ftl".equals(file.getName()) || !"UserController".equals(file.getName())) {
+                        Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+                    //}
 				}
 			}
 		}

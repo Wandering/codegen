@@ -14,6 +14,7 @@ package ${basepackage}.${persistence};
 import cn.thinkjoy.common.managerui.controller.helpers.BaseServiceMaps;
 import cn.thinkjoy.common.managerui.controller.AbstractCommonController;
 
+import cn.thinkjoy.common.service.IBaseService;
 import ${basepackage}.common.ServiceMaps;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,15 @@ public class CommonController extends AbstractCommonController{
     @Override
     protected BaseServiceMaps getServiceMaps() {
         return serviceMaps;
+    }
+
+    @Override
+    protected IBaseService getExportService() {
+        return null;
+    }
+
+    @Override
+    public boolean getEnableDataPerm() {
+        return false;
     }
 }
