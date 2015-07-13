@@ -19,30 +19,30 @@ import java.nio.charset.Charset;
 public class GeneratorMain {
 	public static final boolean isStandard = true;
 
-	private static String dbType = "mysql";
 
 
 
 
-	private static void setDbType(String url)
+
+	private static String getDbType(String url)
 	{
 		if(url.toLowerCase().indexOf("mysql")!=-1)
 		{
-			dbType = "mysql";
+			return  "mysql";
 		}
 		else if(url.toLowerCase().indexOf("oracle")!=-1)
 		{
-			dbType = "oracle";
+			return "oracle";
 		}
-
+		return  "mysql";
 	}
 	/**
 	 * 请直接修改以下代码调用不同的方法以执行相关生成任务.
 	 */
 	public static void main(String[] args) throws Exception {
-
+		String dbType = "mysql";
 		String url = GeneratorProperties.getRequiredProperty("jdbc.url");
-
+		dbType = getDbType(url);
 		GeneratorFacade g = new GeneratorFacade();
 //		g.printAllTableNames();				//打印数据库中的表名称
 		
