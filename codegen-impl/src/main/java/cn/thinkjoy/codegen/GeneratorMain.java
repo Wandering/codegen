@@ -2,6 +2,8 @@ package cn.thinkjoy.codegen;
 
 import cn.org.rapid_framework.generator.GeneratorFacade;
 import cn.org.rapid_framework.generator.GeneratorProperties;
+import cn.org.rapid_framework.generator.provider.db.table.TableFactory;
+import cn.org.rapid_framework.generator.util.JdbcConstants;
 import com.google.common.io.Files;
 
 import java.io.*;
@@ -16,20 +18,48 @@ import java.nio.charset.Charset;
 
 public class GeneratorMain {
 	public static final boolean isStandard = true;
+
+	private static String dbType = "mysql";
+
+
+
+
+	private static void setDbType(String url)
+	{
+		if(url.toLowerCase().indexOf("mysql")!=-1)
+		{
+			dbType = "mysql";
+		}
+		else if(url.toLowerCase().indexOf("oracle")!=-1)
+		{
+			dbType = "oracle";
+		}
+
+	}
 	/**
 	 * 请直接修改以下代码调用不同的方法以执行相关生成任务.
 	 */
 	public static void main(String[] args) throws Exception {
-		
-		
+
+		String url = GeneratorProperties.getRequiredProperty("jdbc.url");
+
 		GeneratorFacade g = new GeneratorFacade();
 //		g.printAllTableNames();				//打印数据库中的表名称
 		
-		g.deleteOutRootDir();			//删除生成器的输出目录
+		g.deleteOutRootDir();			//删除生成器的输出目录g
 //		g.generateByTable("ehr_salary","template/mybatis");	//通过数据库表生成文件,template为模板的根目录
-		g.generateByAllTable("template/mybatis");	//自动搜索数据库中的所有表并生成文件,template为模板的根目录
-		if(isStandard) {
-			g.generateByTableList("template/common");
+		if(JdbcConstants.ORACLE.equals(dbType)) {
+			g.generateByAllTable("templateOracle/mybatis");    //自动搜索数据库中的所有表并生成文件,template为模板的根目录
+			if (isStandard) {
+				g.generateByTableList("templateOracle/common");
+			}
+		}
+		else
+		{
+			g.generateByAllTable("template/mybatis");    //自动搜索数据库中的所有表并生成文件,template为模板的根目录
+			if (isStandard) {
+				g.generateByTableList("template/common");
+			}
 		}
 
 
@@ -47,43 +77,47 @@ public class GeneratorMain {
 			File parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			File sourceDir = new File(outRoot + "/" + module + "-domain");
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (file.isFile()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
+				}
 
-			for (File file : sourceDir.listFiles()) {
-                if(file.isFile()) {
-                    Files.copy(file, new File(parentDirStr + "/" + file.getName()));
-                }
+
+				//docs 下的多文件进行合并
+				File allDocsFile = new File(outRoot + "/" + module + "-domain/docs/all.html");
+				Appendable allDocsFileAppendable = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(allDocsFile)));
+				sourceDir = new File(outRoot + "/" + module + "-domain/docs");
+				if(sourceDir.exists()){
+					for (File file : sourceDir.listFiles()) {
+						Files.copy(file, Charset.defaultCharset(), allDocsFileAppendable);
+						((Flushable) allDocsFileAppendable).flush();
+					}
+				}
 			}
-
-            //docs 下的多文件进行合并
-            File allDocsFile = new File(outRoot + "/" + module + "-domain/docs/all.html");
-            Appendable allDocsFileAppendable = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(allDocsFile)));
-            sourceDir = new File(outRoot + "/" + module + "-domain/docs");
-            if(sourceDir.exists()){
-                for (File file : sourceDir.listFiles()) {
-                    Files.copy(file, Charset.defaultCharset(), allDocsFileAppendable);
-                    ((Flushable) allDocsFileAppendable).flush();
-                }
-            }
 
 			//dao拷贝
 			parentDirStr = autoGenProject + "/mubs-service/src/main/java/" + basePackageDir + "/dao";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
-			sourceDir = new File(outRoot + "/" + module + "-service/java");
-			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				sourceDir = new File(outRoot + "/" + module + "-service/java");
+				for (File file : sourceDir.listFiles()) {
+					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
 			}
-
 
 			//mybatis拷贝
 			parentDirStr = autoGenProject + "/mubs-service/src/main/resources/mybatis";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
-			sourceDir = new File(outRoot + "/" + module + "-service/resources");
-			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				sourceDir = new File(outRoot + "/" + module + "-service/resources");
+				for (File file : sourceDir.listFiles()) {
+					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
 			}
-
 			//dubbo拷贝
 			parentDirStr = autoGenProject + "/mubs-service/src/main/resources/dubbo";
 			parentDir = new File(parentDirStr);
@@ -99,29 +133,34 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-api");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
 				}
 			}
-
 
 			//api-impl拷贝
 			parentDirStr = autoGenProject + "/mubs-service/src/main/java/" + basePackageDir + "/service/impl";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-api/impl");
-			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
 			}
 
 			//api-test拷贝
 			parentDirStr = autoGenProject + "/mubs-service/src/test/java/" + basePackageDir + "/service/impl";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
-			sourceDir = new File(outRoot + "/" + module + "-service/test");
-			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				sourceDir = new File(outRoot + "/" + module + "-service/test");
+				for (File file : sourceDir.listFiles()) {
+					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
 			}
 
 
@@ -130,9 +169,11 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-facade");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
 				}
 			}
 
@@ -141,27 +182,31 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-facade/impl");
-			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
 			}
-
 
 			//facade-test拷贝
 			parentDirStr = autoGenProject + "/mubs-service/src/test/java/" + basePackageDir + "/facade/impl";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-facade/test");
-			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
 			}
-
 			//war-maps拷贝
 			parentDirStr = autoGenProject + "/mubs-admin-war/src/main/java/" + basePackageDir + "/common";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-common");
-			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
 			}
 
 			//war-controller拷贝
@@ -169,8 +214,10 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-controller");
-			for (File file : sourceDir.listFiles()) {
-				Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
 			}
 
 			//war-ftl拷贝
@@ -178,9 +225,11 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
 				}
 			}
 
@@ -189,9 +238,11 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
 				}
 			}
 
@@ -200,20 +251,23 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome/script");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
 				}
 			}
-
 			//war-custome-js-ftl拷贝
 			parentDirStr = autoGenProject + "/mubs-admin-war/src/main/webapp/WEB-INF/view/module/custome/js";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome/js");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
 				}
 			}
 		}

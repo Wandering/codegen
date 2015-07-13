@@ -251,7 +251,7 @@ public class Generator {
 			if(GeneratorHelper.isIgnoreTemplateProcess(srcFile, templateFile,includes,excludes)) {
 				return;
 			}
-			
+
 			if(isCopyBinaryFile && FileHelper.isBinaryFile(srcFile)) {
 				String outputFilepath = proceeForOutputFilepath(filePathModel, templateFile);
 				GLogger.println("[copy binary file by extention] from:"+srcFile+" => "+new File(getOutRootDir(),outputFilepath));

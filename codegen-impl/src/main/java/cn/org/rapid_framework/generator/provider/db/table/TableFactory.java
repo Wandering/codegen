@@ -24,11 +24,7 @@ import cn.org.rapid_framework.generator.provider.db.table.model.ParentRes;
 import cn.org.rapid_framework.generator.provider.db.table.model.Table;
 import cn.org.rapid_framework.generator.provider.db.table.model.util.NumGen;
 import cn.org.rapid_framework.generator.provider.db.table.model.util.SeqGen;
-import cn.org.rapid_framework.generator.util.BeanHelper;
-import cn.org.rapid_framework.generator.util.FileHelper;
-import cn.org.rapid_framework.generator.util.GLogger;
-import cn.org.rapid_framework.generator.util.StringHelper;
-import cn.org.rapid_framework.generator.util.XMLHelper;
+import cn.org.rapid_framework.generator.util.*;
 import cn.org.rapid_framework.generator.util.XMLHelper.NodeData;
 import cn.thinkjoy.codegen.GeneratorMain;
 
@@ -50,8 +46,29 @@ public class TableFactory {
 
     private List<Table> tables = new ArrayList<Table>();
     private Map<String, ParentRes> parentResMap = new HashMap<String, ParentRes>();
+
+	private Map<String,String> tabException = new HashMap<String, String>();
+
+
+
+	private String dbType = "mysql";
 	
 	private TableFactory() {
+		String url = GeneratorProperties.getRequiredProperty("jdbc.url");
+		setDbType(url);
+	}
+
+	private void setDbType(String url)
+	{
+		if(url.toLowerCase().indexOf("mysql")!=-1)
+		{
+			this.dbType = "mysql";
+		}
+		else if(url.toLowerCase().indexOf("oracle")!=-1)
+		{
+			this.dbType = "oracle";
+		}
+
 	}
 	
 	public synchronized static TableFactory getInstance() {
@@ -71,10 +88,17 @@ public class TableFactory {
 		return DataSourceProvider.getConnection();
 	}
 
+
+
 	public List getAllTables() {
 		try {
 			Connection conn = getConnection();
-			return getAllTables(conn);
+			if(JdbcConstants.ORACLE.equals(this.dbType)) {
+				tabException.put("CAS_USER2","");
+				return getAllOracleTables(conn);
+			}
+			else
+				return getAllTables(conn);
 		}catch(Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -244,6 +268,121 @@ public class TableFactory {
 		return tables;
 	}
 
+
+
+	private List getAllOracleTables(Connection conn) throws SQLException {
+//		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME like upper('cas%') and b.COMMENTS is not NULL ";
+		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME ";
+//		String sql = "select a.TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME = 'CAS_CLASSES'";
+		PreparedStatement pre = conn.prepareStatement(sql);// 实例化预编译语句
+		ResultSet rs = pre.executeQuery();
+
+		if(tables.size() == 0) {
+			while (rs.next()) {
+				if(tabException.containsKey(rs.getString("TABLE_NAME")))
+					continue;
+				tables.add(createOracleTable(conn, rs));
+			}
+
+			//handle number and parent props
+			String[] splits = null;
+			String className = "I";
+			String instanceName = "";
+			for(Table table : tables){
+				table.setSeq(SeqGen.incr(SeqGen.MODEL));
+				table.setNumber(NumGen.genNum(table.getSeq()));
+				if(GeneratorMain.isStandard) {
+					table.setLongnumber(parentResMap.get(table.getParentResName()).getNumber() + "_" + table.getNumber());
+					table.setParentId(parentResMap.get(table.getParentResName()).getSeq());
+				}
+				splits = table.getSqlName().toLowerCase().split("_");
+				for(int i = 1; i < splits.length; i++){
+					className += splits[i].replaceFirst(String.valueOf(splits[i].charAt(0)), String.valueOf(splits[i].charAt(0)).toUpperCase());
+					instanceName += splits[i];
+				}
+
+				table.setClassName(className);
+				className = "I";
+				table.setInstanceName(instanceName);
+				instanceName = "";
+			}
+		}
+
+		return tables;
+	}
+
+
+	private Table createOracleTable(Connection conn, ResultSet rs) throws SQLException {
+		String realTableName = null;
+		try {
+			ResultSetMetaData rsMetaData = rs.getMetaData();
+			//String schemaName = rs.getString("TABLE_SCHEM") == null ? "" : rs.getString("TABLE_SCHEM");
+			realTableName = rs.getString("TABLE_NAME");
+			String remarks = rs.getString("COMMENTS");//"REMARKS");
+			remarks="app|app管理|基础管理|CreateBaseDomain\n" +
+					"产品app";
+//			if(remarks == null && dbHelper.isOracleDataBase()) {
+//				remarks = getOracleTableComments(realTableName);
+//			}
+
+			Table table = new Table();
+			table.setSqlName(realTableName);
+			table.setRemarks(remarks);
+
+			ParentRes parentRes = null;
+			if(remarks != null && remarks.length() > 0){
+				String[] comments = null;
+				if(GeneratorMain.isStandard) {
+					String[] lines = remarks.split("\\n");
+					table.setDescription(lines[1]);
+					comments = lines[0].split("\\|");
+					table.setName(comments[0]);
+					table.setResName(comments[1]);
+					table.setParentResName(comments[2]);
+					if (comments[3] != null) {
+						table.setParentClassName(comments[3]);
+					} else {
+						table.setParentClassName("BaseDomain");
+					}
+				} else {
+					table.setParentClassName("BaseDomain");
+				}
+
+				if(comments != null && parentResMap.get(comments[2]) == null) {
+					parentRes = new ParentRes();
+					parentRes.setName(comments[2]);
+					parentRes.setSeq(SeqGen.incr(SeqGen.MODEL));
+
+					parentRes.setNumber(NumGen.genNum(parentRes.getSeq()));
+
+					parentResMap.put(comments[2], parentRes);
+				}
+			} else {
+				throw new RuntimeException("table comments is not empty");
+			}
+
+//            table.setSeq(SeqGen.incr(SeqGen.MODEL));
+//            String number = NumGen.genNum(table.getSeq());
+//            table.setNumber(number);
+//            if(parentRes != null) {
+//                table.setLongnumber(parentRes.getNumber() + "_" + table.getNumber());
+//            }
+
+//			if ("SYNONYM".equals(tableType) && dbHelper.isOracleDataBase()) {
+//				table.setOwnerSynonymName(getSynonymOwner(realTableName));
+//			}
+
+			retriveTableColumns(table);
+
+			table.initExportedKeys(conn.getMetaData());
+			table.initImportedKeys(conn.getMetaData());
+			BeanHelper.copyProperties(table, TableOverrideValuesProvider.getTableOverrideValues(table.getSqlName()));
+			return table;
+		}catch(SQLException e) {
+			throw new RuntimeException("create table object error,tableName:"+realTableName,e);
+		}
+	}
+
 	private String getSynonymOwner(String synonymName)  {
 	      PreparedStatement ps = null;
 	      ResultSet rs = null;
@@ -311,7 +450,7 @@ public class TableFactory {
 	private DatabaseMetaData getMetaData() throws SQLException {
 		return getConnection().getMetaData();
 	}
-	
+
 	private void retriveTableColumns(Table table) throws SQLException {
 	      GLogger.trace("-------setColumns(" + table.getSqlName() + ")");
 
@@ -376,6 +515,15 @@ public class TableFactory {
 	      }
 	}
 
+
+
+	private int getSqlTypeByName(String name,int sqlType)
+	{
+		if(name.toLowerCase().equals("nvarchar2"))
+			return  12;
+		return  sqlType;
+	}
+
 	private List getTableColumns(Table table, List primaryKeys, List indices, Map uniqueIndices, Map uniqueColumns) throws SQLException {
 		// get the columns
 	      List columns = new LinkedList();
@@ -384,6 +532,7 @@ public class TableFactory {
 	      while (columnRs.next()) {
 	         int sqlType = columnRs.getInt("DATA_TYPE");
 	         String sqlTypeName = columnRs.getString("TYPE_NAME");
+			  sqlType=getSqlTypeByName(sqlTypeName,sqlType);
 	         String columnName = columnRs.getString("COLUMN_NAME");
 	         String columnDefaultValue = columnRs.getString("COLUMN_DEF");
 	         
@@ -391,6 +540,8 @@ public class TableFactory {
 	         if(remarks == null && dbHelper.isOracleDataBase()) {
 	        	 remarks = getOracleColumnComments(table.getSqlName(), columnName);
 	         }
+			 if(remarks==null)
+				 remarks = "";
 	         
 	         // if columnNoNulls or columnNullableUnknown assume "not nullable"
 	         boolean isNullable = (DatabaseMetaData.columnNullable == columnRs.getInt("NULLABLE"));
@@ -409,6 +560,9 @@ public class TableFactory {
 	         if (isUnique) {
 	            GLogger.trace("unique column:" + columnName);
 	         }
+			 if(JdbcConstants.ORACLE.equals(this.dbType)) {
+				columnName = columnName.toLowerCase();
+			 }
 	         Column column = new Column(
 	               table,
 	               sqlType,

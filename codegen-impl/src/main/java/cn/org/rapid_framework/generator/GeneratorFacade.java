@@ -198,12 +198,13 @@ public class GeneratorFacade {
             for(Table table : tables){
                 //允许我多占用一会cpu
                 for(String already : alreadyTbls){
-                    if(table.getSqlName().endsWith(already)){
+                    if(table.getSqlName().toLowerCase().endsWith(already)){
                         isAlreay = true;
                         continue;
                     }
                 }
 
+				table.setSqlName(table.getSqlName().toLowerCase());
                 if(!isAlreay) {
                     newtables.add(table);
                 } else {
