@@ -215,13 +215,13 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-controller");
-			for (File file : sourceDir.listFiles()) {
-                if(!"RoleController".equals(file.getName()) || !"UserController".equals(file.getName())) {
-                    Files.copy(file, new File(parentDirStr + "/" + file.getName()));
-                }
 			if(sourceDir.listFiles()!=null) {
 				for (File file : sourceDir.listFiles()) {
-					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					if (!"RoleController".equals(file.getName()) || !"UserController".equals(file.getName())) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
+
+
 				}
 			}
 
