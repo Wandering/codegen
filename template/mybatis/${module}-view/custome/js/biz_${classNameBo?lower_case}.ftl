@@ -32,7 +32,7 @@
         return rules;
     }
     function searchLoad(){
-        var url = "/admin/${bizSys}/${mainObj}s";
+        var url = "/admin/${r"${bizSys}/${mainObj}"}s";
 
         var rules = buildRules();
 
