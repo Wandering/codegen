@@ -31,7 +31,6 @@ VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${
 
   <#assign className = table.classNameBo>
   <#assign classNameFirstLower = table.classNameFirstLower>
-  <#assign idJavaType = table.idColumn.javaType>
   <#macro mapperEl value>${r"#{"}${value}}</#macro>
   <#macro namespace>${basepackage}.${persistence}</#macro>
 

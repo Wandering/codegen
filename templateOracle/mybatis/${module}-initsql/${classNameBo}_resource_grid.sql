@@ -2,7 +2,6 @@
 <#assign className = table.classNameBo>
 <#assign classNameFirstLower = table.classNameFirstLower>
 <#assign classNameAllLower = table.classNameBo?lower_case>
-<#assign idJavaType = table.idColumn.javaType>
 <#macro mapperEl value>${r"#{"}${value}}</#macro>
 <#macro namespace>${basepackage}.${persistence}</#macro>
 

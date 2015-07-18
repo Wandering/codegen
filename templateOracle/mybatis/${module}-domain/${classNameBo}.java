@@ -11,7 +11,7 @@
 <#assign isCbd = false>
 
 <#list table.columns as column>
-    <#if column=='creator'>
+    <#if column=='status'>
         <#assign isCbd = true>
     </#if>
 </#list>

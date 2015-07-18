@@ -3,7 +3,7 @@
 <#assign classNameFirstLower = table.classNameFirstLower>   
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
-<#assign idJavaType = table.idColumn.javaType>
+
 <#macro mapperEl value>${r"#{"}${value}}</#macro>
 <#macro namespace>${basepackage}.${persistence}</#macro>
 
@@ -18,6 +18,9 @@
 		${_column.sqlName}<#if _column_has_next>,</#if>
 		</#list>
 	</sql>
+<#if table.pkCount!=0 >
+    <#assign idJavaType = table.idColumn.javaType>
+
 	<select id="load" parameterType="${idJavaType}" resultMap="rm">
 		SELECT 
 			<include refid="Base_Column_List" />
@@ -39,6 +42,7 @@
 		${column.sqlName} = <@mapperEl 'id'/> <#if column_has_next> AND </#if>
 		</#list>
 	</delete>
+
 	 <!-- 插入 -->
 	<insert id="insert" useGeneratedKeys="true" keyProperty="${table.idColumn.columnNameFirstLower}">
 		INSERT INTO ${table.sqlName} (
@@ -99,5 +103,7 @@
 	</select>
 	</#if>
 	</#list>
+
+		</#if>
 </mapper>
 
