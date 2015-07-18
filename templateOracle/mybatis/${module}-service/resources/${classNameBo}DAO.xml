@@ -38,7 +38,7 @@ selectList
         <#if _column.sqlName=="number">
             "${_column.sqlName}" as "${_column.columnNameFirstLower}" <#if _column_has_next>,</#if>
         <#else>
-            ${_column.sqlName} as ${_column.columnNameFirstLower}<#if _column_has_next>,</#if>
+            ${_column.sqlName} as "${_column.columnNameFirstLower}" <#if _column_has_next>,</#if>
         </#if>
 
     <#elseif 12==_column.sqlType>
