@@ -282,8 +282,8 @@ public class TableFactory {
 	private List getAllOracleTables(Connection conn) throws SQLException {
 //		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME like upper('cas%') and b.COMMENTS is not NULL ";
 //		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME like upper('%order%')  ";
-//		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME  where b.TABLE_NAME not  LIKE upper('zyj%')  ";
-		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME  where b.TABLE_NAME   LIKE upper('zyj%')  ";
+		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME  where b.TABLE_NAME not  LIKE upper('zyj%')  ";
+//		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME  where b.TABLE_NAME   LIKE upper('zyj%')  ";
 //		String sql = "select a.TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME = 'CAS_CLASSES'";
 		PreparedStatement pre = conn.prepareStatement(sql);// 实例化预编译语句
 		ResultSet rs = pre.executeQuery();
@@ -307,7 +307,7 @@ public class TableFactory {
 					table.setParentId(parentResMap.get(table.getParentResName()).getSeq());
 				}
 				splits = table.getSqlName().toLowerCase().split("_");
-				int index=1;
+				int index=0;
 //				if(splits.length==1)
 //					index = 0;
 				for(int i = index; i < splits.length; i++){
