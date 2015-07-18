@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since v0.0.1
  */
 public class NumGen {
-    private static final String[] high = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v"};
+    private static final String[] high = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v","w","x"};
     private static final String[] low = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9"};
     private static final Map<Integer, String> maps = new HashMap<Integer, String>();
     private static final AtomicInteger incr = new AtomicInteger(0);

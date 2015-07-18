@@ -48,9 +48,18 @@ public class TableFactory {
     private Map<String, ParentRes> parentResMap = new HashMap<String, ParentRes>();
 
 	private Map<String,String> tabException = new HashMap<String, String>();
+	private static String[] alreadyTbls = new String[]{
+			"_data_model", "_model", "_resource", "_resource_action", "_resource_grid",
+			"_role", "_role_resource", "_role_user", "_user_data", "_datagroup", "_datagroup_data", "_user_datagroup"};
 
-
-
+	private static String[] defaultColumns = new String[]{"createDate","lastModifier","lastModDate",
+			"dataModelId","dataId","groupId","tblName",
+			"isAdmin","datagroupId","bizDimension","employeeId",
+			"modelId","assignUrl","whereSql",
+			"resourceId","resourceActionId","roleId","userId",
+			"orderNum","parentId","longNumber","bizModelName",
+			"resId","displayName","colId","orderNum","moduleName",
+			"resourceId","divId","actionScript","actionAlias"};
 	private String dbType = "mysql";
 	
 	private TableFactory() {
@@ -272,7 +281,9 @@ public class TableFactory {
 
 	private List getAllOracleTables(Connection conn) throws SQLException {
 //		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME like upper('cas%') and b.COMMENTS is not NULL ";
-		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME ";
+//		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME like upper('%order%')  ";
+//		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME  where b.TABLE_NAME not  LIKE upper('zyj%')  ";
+		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME  where b.TABLE_NAME   LIKE upper('zyj%')  ";
 //		String sql = "select a.TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME = 'CAS_CLASSES'";
 		PreparedStatement pre = conn.prepareStatement(sql);// 实例化预编译语句
 		ResultSet rs = pre.executeQuery();
@@ -296,7 +307,10 @@ public class TableFactory {
 					table.setParentId(parentResMap.get(table.getParentResName()).getSeq());
 				}
 				splits = table.getSqlName().toLowerCase().split("_");
-				for(int i = 1; i < splits.length; i++){
+				int index=1;
+//				if(splits.length==1)
+//					index = 0;
+				for(int i = index; i < splits.length; i++){
 					className += splits[i].replaceFirst(String.valueOf(splits[i].charAt(0)), String.valueOf(splits[i].charAt(0)).toUpperCase());
 					instanceName += splits[i];
 				}
@@ -524,6 +538,26 @@ public class TableFactory {
 		return  sqlType;
 	}
 
+	private boolean isdefaultTable(String tableName)
+	{
+		for(String already : alreadyTbls){
+			if(tableName.toLowerCase().endsWith(already)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private String getdefaultcolumn(String columnName)
+	{
+		for(String already : defaultColumns){
+			if(already.toLowerCase().equals(columnName)){
+				return already;
+			}
+		}
+		return columnName;
+	}
+
 	private List getTableColumns(Table table, List primaryKeys, List indices, Map uniqueIndices, Map uniqueColumns) throws SQLException {
 		// get the columns
 	      List columns = new LinkedList();
@@ -560,8 +594,15 @@ public class TableFactory {
 	         if (isUnique) {
 	            GLogger.trace("unique column:" + columnName);
 	         }
-			 if(JdbcConstants.ORACLE.equals(this.dbType)) {
-				columnName = columnName.toLowerCase();
+			 if(JdbcConstants.ORACLE.equals(this.dbType) ) {
+				 if(isdefaultTable(table.getSqlName()))
+				 {
+					 columnName = getdefaultcolumn(columnName.toLowerCase());
+				 }
+				 else
+				 {
+					 columnName = columnName.toLowerCase();
+				 }
 			 }
 	         Column column = new Column(
 	               table,

@@ -346,8 +346,11 @@ public class Table implements java.io.Serializable,Cloneable {
 	}
 	/** 得到单主键，等价于getPkColumns().get(0)  */
 	public Column getPkColumn() {
+//		if(getPkColumns().isEmpty()) {
+//			throw new IllegalStateException("not found primary key on table:"+getSqlName());
+//		}
 		if(getPkColumns().isEmpty()) {
-			throw new IllegalStateException("not found primary key on table:"+getSqlName());
+			return null;
 		}
 		return getPkColumns().get(0);
 	}
