@@ -38,7 +38,7 @@ selectList
         <#if _column.sqlName=="number">
             "${_column.sqlName}" as "${_column.columnNameFirstLower}" <#if _column_has_next>,</#if>
         <#else>
-            ${_column.sqlName} as ${_column.columnNameFirstLower}<#if _column_has_next>,</#if>
+            ${_column.sqlName} as "${_column.columnNameFirstLower}" <#if _column_has_next>,</#if>
         </#if>
 
     <#elseif 12==_column.sqlType>
@@ -253,7 +253,7 @@ selectList
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="condition.${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} like CONCAT('%', <@mapperEl 'condition.' + column.columnNameFirstLower/> , '%')
+                AND ${column.sqlName} like '%' ||  <@mapperEl 'condition.' + column.columnNameFirstLower/>  ||  '%')
             </if>
         </#list>
         </trim>

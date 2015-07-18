@@ -3,12 +3,11 @@ package cn.org.rapid_framework.generator.provider.db.table.model;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 import cn.org.rapid_framework.generator.GeneratorProperties;
 import cn.org.rapid_framework.generator.provider.db.table.TableFactory;
+import cn.org.rapid_framework.generator.util.JdbcConstants;
 import cn.org.rapid_framework.generator.util.StringHelper;
 /**
  * 用于生成代码的Table对象.对应数据库的table
@@ -16,6 +15,15 @@ import cn.org.rapid_framework.generator.util.StringHelper;
  * @email badqiu(a)gmail.com
  */
 public class Table implements java.io.Serializable,Cloneable {
+
+    private static final Set<String> ORACLE_KEY_COLUMN_SETS = new HashSet<String>();
+    static{
+        ORACLE_KEY_COLUMN_SETS.add("name");
+        ORACLE_KEY_COLUMN_SETS.add("type");
+        ORACLE_KEY_COLUMN_SETS.add("sequence");
+        ORACLE_KEY_COLUMN_SETS.add("start");
+    }
+
 
 	String sqlName;
 	String remarks;
@@ -143,7 +151,21 @@ public class Table implements java.io.Serializable,Cloneable {
 	}
 	
 	public LinkedHashSet<Column> getColumns() {
-		return columns;
+        //针对 oracle 做特殊处理    name,type,sequence,start
+        String url = GeneratorProperties.getRequiredProperty("jdbc.url");
+        String dbType = getDbType(url);
+        if(JdbcConstants.ORACLE.equals(dbType)) { //oracle
+            LinkedHashSet<Column> newColumns = new LinkedHashSet<Column>();
+            for(Column column : columns){
+                if(ORACLE_KEY_COLUMN_SETS.contains(column.getName())){
+                    column.setName("\""+column.getName().toUpperCase()+"\"");
+                }
+                newColumns.add(column);
+            }
+            return newColumns;
+        } else {
+            return columns;
+        }
 	}
 	public void setColumns(LinkedHashSet<Column> columns) {
 		this.columns = columns;
@@ -483,6 +505,19 @@ public class Table implements java.io.Serializable,Cloneable {
 			return null;
 		}
 	}
+
+    private static String getDbType(String url)
+    {
+        if(url.toLowerCase().indexOf("mysql")!=-1)
+        {
+            return  "mysql";
+        }
+        else if(url.toLowerCase().indexOf("oracle")!=-1)
+        {
+            return "oracle";
+        }
+        return  "mysql";
+    }
 	
 	String catalog = TableFactory.getInstance().getCatalog();
 	String schema = TableFactory.getInstance().getSchema();
