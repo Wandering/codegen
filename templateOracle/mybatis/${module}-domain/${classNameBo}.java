@@ -10,11 +10,6 @@
 
 <#assign isCbd = false>
 
-<#list table.columns as column>
-    <#if column=='status'>
-        <#assign isCbd = true>
-    </#if>
-</#list>
 
 
 package ${basepackage}.domain;
@@ -33,7 +28,7 @@ import java.util.*;
 
 public class ${className} extends <#if isCbd>CreateBaseDomain<#else>BaseDomain</#if>{
 <#list table.columns as column>
-<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'||column='status'>
+<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
 <#else>
     /** ${column.remarks} */
     private ${column.possibleShortJavaType} ${column.columnNameFirstLower};
@@ -78,7 +73,7 @@ public class ${className} extends <#if isCbd>CreateBaseDomain<#else>BaseDomain</
     <#if column.isDateTimeColumn>
 
     </#if>
-<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'||column='status'>
+<#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'>
 <#else>
     public void set${column.columnName}(${column.possibleShortJavaType} value) {
         this.${column.columnNameFirstLower} = value;

@@ -35,36 +35,24 @@ selectList
 -->
 
 <#assign isSKey = false>
-<#assign key = "id">
 
 <#list table.columns as column>
 <#if column=='id'>
     <#if 12==column.sqlType>
         <#assign isSKey = true>
-        <#assign key = "sId">
     </#if>
 </#if>
  </#list>
 
     <sql id="Base_Column_List">
     <#list table.columns as _column>
-    <#if "id"!=_column>
-        <#if _column.sqlName=="number">
-            "${_column.sqlName}" as "${_column.columnNameFirstLower}" <#if _column_has_next>,</#if>
-        <#else>
-            ${_column.sqlName} as "${_column.columnNameFirstLower}" <#if _column_has_next>,</#if>
-        </#if>
-
-    <#else>
-        id as ${key}<#if _column_has_next>,</#if>
-    </#if>
-
+            "${ _column.sqlName?upper_case}" as "${_column.columnNameFirstLower}" <#if _column_has_next>,</#if>
     </#list>
     </sql>
 
     <insert id="insert" parameterType="${className}">
         <#if isSKey>
-            <selectKey keyProperty="sId" resultType="String" order="BEFORE">
+            <selectKey keyProperty="id" resultType="String" order="BEFORE">
                 select sys_guid() from dual
             </selectKey>
         <#else>
@@ -74,15 +62,11 @@ selectList
         </#if>
         INSERT INTO ${table.sqlName} (
         <#list table.columns as column>
-                ${column.sqlName}<#if column_has_next>,</#if>
+                "${column.sqlName?upper_case}"<#if column_has_next>,</#if>
         </#list>
         ) VALUES (
         <#list table.columns as column>
-            <#if "id"!=column>
                 <@mapperEl column.columnNameFirstLower/><#if column_has_next>,</#if>
-            <#else>
-                <@mapperEl key/><#if column_has_next>,</#if>
-            </#if>
         </#list>
         )
     </insert>
@@ -93,13 +77,15 @@ selectList
         <trim prefix="SET" suffixOverrides=",">
         <#list table.notPkColumns as column>
             <if test="${column.columnNameFirstLower}!=null">
-                ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>,
+                "${column.sqlName?upper_case}" = <@mapperEl column.columnNameFirstLower/>,
             </if>
         </#list>
         </trim>
         WHERE
         <#list table.compositeIdColumns as column>
-            ${column.sqlName} = <@mapperEl column.columnNameFirstLower/><#if column_has_next> AND </#if>
+        <if test="${column.columnNameFirstLower}!=null">
+        "${column.sqlName?upper_case}" = <@mapperEl column.columnNameFirstLower/><#if column_has_next> AND </#if>
+        </if>
         </#list>
     </update>
 
@@ -108,12 +94,12 @@ selectList
         <trim prefix="SET" suffixOverrides=",">
         <#list table.notPkColumns as column>
             <if test="map.${column.columnNameFirstLower}!=null">
-                ${column.sqlName} = <@mapperEl 'map.'+column.columnNameFirstLower />,
+                "${column.sqlName?upper_case}" = <@mapperEl 'map.'+column.columnNameFirstLower />,
             </if>
         </#list>
         </trim>
         WHERE
-        id = <@mapperEl 'map.sid'/>
+        "ID" = <@mapperEl 'map.id'/>
     </update>
 
     <update id="updateByCondition">
@@ -121,7 +107,7 @@ selectList
         <trim prefix="SET" suffixOverrides=",">
             <#list table.notPkColumns as column>
             <if test="update.${column.columnNameFirstLower}!=null">
-                ${column.sqlName} = <@mapperEl 'update.'+column.columnNameFirstLower />,
+                "${column.sqlName?upper_case}" = <@mapperEl 'update.'+column.columnNameFirstLower />,
             </if>
         </#list>
         </trim>
@@ -129,17 +115,19 @@ selectList
         <trim prefix="WHERE" prefixOverrides="AND | OR">
         <#list table.columns as column>
         <if test="condition.${column.columnNameFirstLower}!=null">
-            AND ${column.sqlName} = <@mapperEl 'condition.' + column.columnNameFirstLower/>
+            AND "${column.sqlName?upper_case}" = <@mapperEl 'condition.' + column.columnNameFirstLower/>
         </if>
         </#list>
         </trim>
     </update>
 
     <insert id="insertMap" >
-    INSERT INTO ${table.sqlName} (
-    <#list table.columns as column>
-        <#if !isSKey>
-                ${column.sqlName}<#if column_has_next>,</#if>
+        INSERT INTO ${table.sqlName} (
+        <#list table.columns as column>
+            <#if "id"!=column >
+                    "${column.sqlName?upper_case}"<#if column_has_next>,</#if>
+        <#elseif !isSKey>
+        "${column.sqlName?upper_case}"<#if column_has_next>,</#if>
         </#if>
             </#list>
             ) VALUES (
@@ -157,12 +145,12 @@ selectList
         UPDATE ${table.sqlName}
         <trim prefix="SET" suffixOverrides=",">
             <#list table.notPkColumns as column>
-            ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>,
+            "${column.sqlName?upper_case}" = <@mapperEl column.columnNameFirstLower/>,
         </#list>
         </trim>
                 WHERE
         <#list table.compositeIdColumns as column>
-                ${column.sqlName} = <@mapperEl column.columnNameFirstLower/> <#if column_has_next> AND </#if>
+                "${column.sqlName?upper_case}" = <@mapperEl column.columnNameFirstLower/> <#if column_has_next> AND </#if>
                 </#list>
     </update>
 
@@ -172,7 +160,7 @@ selectList
         DELETE FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.compositeIdColumns as column>
-            AND ${column.sqlName} = <@mapperEl 'id'/>
+            AND "${column.sqlName?upper_case}" = <@mapperEl 'id'/>
         </#list>
         </trim>
         </delete>
@@ -182,7 +170,7 @@ selectList
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} = <@mapperEl column.columnNameFirstLower/>
+                AND "${column.sqlName?upper_case}" = <@mapperEl column.columnNameFirstLower/>
             </if>
         </#list>
         </trim>
@@ -199,7 +187,7 @@ selectList
         FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.compositeIdColumns as column>
-            AND ${column.sqlName} = <@mapperEl 'id'/>
+            AND "${column.sqlName?upper_case}" = <@mapperEl 'id'/>
         </#list>
         </trim>
     </select>
@@ -242,7 +230,7 @@ selectList
         <where>
 
             <if test="condition.whereSql != null">
-                and id in (<@mapperEl 'condition.whereSql'/>)
+                and "ID" in (<@mapperEl 'condition.whereSql'/>)
             </if>
 
             <#list table.columns as column>
@@ -272,7 +260,7 @@ selectList
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="condition.${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} like '%' ||  <@mapperEl 'condition.' + column.columnNameFirstLower/>  ||  '%')
+                AND "${column.sqlName?upper_case}" like '%' ||  <@mapperEl 'condition.' + column.columnNameFirstLower/>  ||  '%'
             </if>
         </#list>
         </trim>
@@ -289,7 +277,7 @@ selectList
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="condition.${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} = <@conditionMapperEl column.columnNameFirstLower/>
+                AND "${column.sqlName?upper_case}" = <@conditionMapperEl column.columnNameFirstLower/>
             </if>
         </#list>
         </trim>
@@ -305,7 +293,7 @@ selectList
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="condition.${column.columnNameFirstLower}!=null">
-                AND ${column.sqlName} = <@conditionMapperEl column.columnNameFirstLower/>
+                AND "${column.sqlName?upper_case}" = <@conditionMapperEl column.columnNameFirstLower/>
             </if>
             </#list>
         </trim>
@@ -317,14 +305,14 @@ selectList
 
     <select id="count" resultType="java.lang.Integer">
     <#if table.pkCount!=0 >
-    SELECT count(${table.idColumn.sqlName}) FROM ${table.sqlName}
+    SELECT count(“${table.idColumn.sqlName?upper_case}”) FROM ${table.sqlName}
     <#else>
         SELECT count(*) FROM ${table.sqlName}
     </#if>
     <where>
         <#list table.columns as column>
         <if test="${column.columnNameFirstLower}!=null">
-            <@jspEl 'groupOp'/> ${column.sqlName} <@jspEl column.columnNameFirstLower+'.op'/>  <@mapperEl column.columnNameFirstLower+'.data'/>
+            <@jspEl 'groupOp'/> "${column.sqlName?upper_case}" <@jspEl column.columnNameFirstLower+'.op'/>  <@mapperEl column.columnNameFirstLower+'.data'/>
         </if>
         </#list>
     </where>
@@ -332,7 +320,7 @@ selectList
 <#if idJavaType!="">
     <select id="selectMaxId" resultType="${table.idColumn.javaType}">
         SELECT
-        MAX(id)
+        MAX(ID)
         FROM ${table.sqlName}
     </select>
 </#if>
