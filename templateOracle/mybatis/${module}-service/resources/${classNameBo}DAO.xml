@@ -305,7 +305,7 @@ selectList
 
     <select id="count" resultType="java.lang.Integer">
     <#if table.pkCount!=0 >
-    SELECT count(“${table.idColumn.sqlName?upper_case}”) FROM ${table.sqlName}
+    SELECT count(${table.idColumn.sqlName?upper_case}) FROM ${table.sqlName}
     <#else>
         SELECT count(*) FROM ${table.sqlName}
     </#if>
