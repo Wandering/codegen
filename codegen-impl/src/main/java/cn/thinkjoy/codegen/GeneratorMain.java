@@ -63,7 +63,7 @@ public class GeneratorMain {
 		}
 
 
-		if(true) {
+		if(false) {
 			//yq add 进行对应的文件拷贝
 			String startupDir = GeneratorProperties.getRequiredProperty("startupDir");
 			String autoGenProject = startupDir + "-autogen/managerui-biz-startup";
