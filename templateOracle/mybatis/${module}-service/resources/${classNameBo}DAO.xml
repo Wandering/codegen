@@ -66,7 +66,17 @@ selectList
         </#list>
         ) VALUES (
         <#list table.columns as column>
-                <@mapperEl column.columnNameFirstLower/><#if column_has_next>,</#if>
+        <#if 12==column.sqlType>
+            <@mapperEl column.columnNameFirstLower+",jdbcType=NVARCHAR" /><#if column_has_next>,</#if>
+        <#elseif 93==column.sqlType>
+            <@mapperEl column.columnNameFirstLower+",jdbcType=TIMESTAMP" /><#if column_has_next>,</#if>
+        <#elseif 3==column.sqlType>
+            <@mapperEl column.columnNameFirstLower+",jdbcType=BIGINT" /><#if column_has_next>,</#if>
+        <#else>
+            <@mapperEl column.columnNameFirstLower+","+column.sqlType /><#if column_has_next>,</#if>
+        </#if>
+
+
         </#list>
         )
     </insert>
@@ -235,7 +245,7 @@ selectList
 
             <#list table.columns as column>
                 <if test="condition.${column.columnNameFirstLower}!=null">
-                    <@jspEl 'condition.groupOp'/>   ${column.sqlName}  <@jspEl 'condition.' + column.columnNameFirstLower+'.op'/>  <@mapperEl 'condition.' + column.columnNameFirstLower+'.data'/>
+                    <@jspEl 'condition.groupOp'/>  <@jspEl 'condition.' + column.columnNameFirstLower+'.field'/>  <@jspEl 'condition.' + column.columnNameFirstLower+'.op'/>  <@mapperEl 'condition.' + column.columnNameFirstLower+'.data'/>
                 </if>
             </#list>
 
@@ -312,7 +322,7 @@ selectList
     <where>
         <#list table.columns as column>
         <if test="${column.columnNameFirstLower}!=null">
-            <@jspEl 'groupOp'/> "${column.sqlName?upper_case}" <@jspEl column.columnNameFirstLower+'.op'/>  <@mapperEl column.columnNameFirstLower+'.data'/>
+            <@jspEl 'groupOp'/> <@jspEl column.columnNameFirstLower+'.field'/> <@jspEl column.columnNameFirstLower+'.op'/>  <@mapperEl column.columnNameFirstLower+'.data'/>
         </if>
         </#list>
     </where>
@@ -323,6 +333,21 @@ selectList
         MAX(ID)
         FROM ${table.sqlName}
     </select>
+</#if>
+<#if table.idColumn?exists>
+    <delete id="deleteByIds" parameterType="java.util.List">
+
+    DELETE FROM ${table.sqlName} where ${table.idColumn.sqlName?upper_case} in
+
+    <foreach item="item" collection="list" open="(" separator="," close=")">
+        <#if isSKey>
+            '<@jspEl 'item'/>'
+        <#else>
+            <@jspEl 'item'/>
+        </#if>
+    </foreach>
+
+    </delete>
 </#if>
 </mapper>
 
