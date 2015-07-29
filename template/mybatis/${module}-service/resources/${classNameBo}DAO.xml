@@ -33,7 +33,7 @@ selectList
 -->
     <sql id="Base_Column_List">
         <#list table.columns as _column>
-        ${_column.sqlName}<#if _column_has_next>,</#if>
+        ${_column.sqlName} as ${_column.columnNameFirstLower} <#if _column_has_next>,</#if>
         </#list>
     </sql>
     <insert id="insert" parameterType="${className}">

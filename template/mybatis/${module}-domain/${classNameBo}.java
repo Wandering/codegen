@@ -15,7 +15,19 @@
         <#assign isCbd = true>
     </#if>
 </#list>
+<#assign pkType = "Long">
 
+<#if table.getPkColumn()?exists>
+
+	<#if table.getPkColumn().sqlType==4>
+		<#assign pkType = "Integer">
+	<#elseif table.getPkColumn().sqlType==12>
+		<#assign pkType = "String">
+	<#elseif table.getPkColumn().sqlType==-5>
+		<#assign pkType = "Long">
+	</#if>
+
+</#if>
 
 package ${basepackage}.domain;
 
@@ -31,7 +43,7 @@ import cn.thinkjoy.common.domain.BaseDomain;
 
 import java.util.*;
 
-public class ${className} extends <#if isCbd>CreateBaseDomain<#else>BaseDomain</#if>{
+public class ${className} extends <#if isCbd>CreateBaseDomain<${pkType}><#else>BaseDomain<${pkType}></#if>{
 <#list table.columns as column>
 <#if column='id'||column='creator'||column='createDate'||column='lastModifier'||column='lastModDate'||column='status'>
 <#else>
