@@ -243,7 +243,15 @@ public class TableFactory {
 		DatabaseMetaData dbMetaData = conn.getMetaData();
 		//ResultSet rs = dbMetaData.getTables(getCatalog(), getSchema(), null, null);
         ResultSet rs = dbMetaData.getTables(conn.getCatalog(), getSchema(), null, null);
-        rs = schemaConn.createStatement().executeQuery("select * from TABLES where TABLE_SCHEMA = '" + GeneratorProperties.getRequiredProperty("jdbc.databasename") + "'");
+		String pre = GeneratorProperties.getRequiredProperty("table.pre");
+		String notpre = GeneratorProperties.getRequiredProperty("table.notpre");
+		if(!pre.isEmpty())
+			pre = "TABLE_NAME  like '"+pre+"%' and ";
+		if(!notpre.isEmpty()) {
+			pre = "TABLE_NAME  not like '" + notpre + "%' and ";
+		}
+		String sql = "select * from TABLES where  " + pre +"TABLE_SCHEMA = '" + GeneratorProperties.getRequiredProperty("jdbc.databasename") + "'";
+        rs = schemaConn.createStatement().executeQuery(sql);
 		//List tables = new ArrayList();
         if(tables.size() == 0) {
             while (rs.next()) {
