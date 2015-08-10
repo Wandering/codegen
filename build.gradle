@@ -3,7 +3,7 @@ buildscript{
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url "http://repo.thinkjoy.local/content/repositories/public" }
+        maven { url "http://repo.thinkjoy.cn/content/repositories/public" }
     }
     dependencies{
         classpath 'cn.thinkjoy.gradle.plugins:gradle-gitflow-plugin:1.0.1+'
@@ -39,7 +39,7 @@ allprojects {
         maven {
             url 'http://repo.spring.io/snapshot'
         }
-        maven { url "http://repo.thinkjoy.local/content/repositories/public" }
+        maven { url "http://repo.thinkjoy.cn/content/repositories/public" }
 
     }
 
@@ -51,7 +51,7 @@ allprojects {
         repositories {
             maven {
                 name = 'thinkjoy'
-                url "http://repo.thinkjoy.local/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}"
+                url "http://repo.thinkjoy.cn/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}"
             }
         }
     }
