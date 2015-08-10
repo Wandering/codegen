@@ -31,28 +31,44 @@ updateOrSave
 selectOne
 selectList
 -->
+<#assign isSKey = false>
+<#if table.getPkColumn().sqlType==12>
+<#assign isSKey = true>
+</#if>
+
     <sql id="Base_Column_List">
         <#list table.columns as _column>
         ${_column.sqlName} as ${_column.columnNameFirstLower} <#if _column_has_next>,</#if>
         </#list>
     </sql>
     <insert id="insert" parameterType="${className}">
+        <#if isSKey>
+            <selectKey keyProperty="id" resultType="String" order="BEFORE">
+                select replace(uuid(),'-','')
+            </selectKey>
+        </#if>
         INSERT INTO ${table.sqlName} (
         <#list table.columns as column>
-        <#if "id"!=column>
+        <#if "id"!=column || isSKey>
         ${column.sqlName}<#if column_has_next>,</#if>
         </#if>
         </#list>
         ) VALUES (
         <#list table.columns as column>
-        <#if "id"!=column>
+        <#if "id"!=column || isSKey>
         <@mapperEl column.columnNameFirstLower/><#if column_has_next>,</#if>
         </#if>
         </#list>
         )
-        <selectKey resultType="java.lang.Long" keyProperty="id">
-        SELECT LAST_INSERT_ID() AS ID
-        </selectKey>
+        <#if table.getPkColumn().sqlType==4>
+            <selectKey resultType="java.lang.Integer" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+            </selectKey>
+        <#elseif table.getPkColumn().sqlType==5>
+            <selectKey resultType="java.lang.Long" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+            </selectKey>
+        </#if>
     </insert>
 
     <!-- 更新 -->
@@ -106,7 +122,7 @@ selectList
     <insert id="insertMap" >
         INSERT INTO ${table.sqlName} (
             <#list table.columns as column>
-            <#if "id"!=column>
+            <#if "id"!=column || isSKey>
                 ${column.sqlName}<#if column_has_next>,</#if>
             </#if>
             </#list>
@@ -114,6 +130,8 @@ selectList
             <#list table.columns as column>
                 <#if "id"!=column>
                     <@mapperEl 'map.'+column.columnNameFirstLower /><#if column_has_next>,</#if>
+                <#elseif isSKey>
+                    replace(uuid(),'-','')<#if column_has_next>,</#if>
                 </#if>
             </#list>
         )
