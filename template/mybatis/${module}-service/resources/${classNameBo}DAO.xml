@@ -44,7 +44,7 @@ selectList
     <insert id="insert" parameterType="${className}">
         <#if isSKey>
             <selectKey keyProperty="id" resultType="String" order="BEFORE">
-                select replace(uuid(),'-','')
+                select uuid()
             </selectKey>
         </#if>
         INSERT INTO ${table.sqlName} (
