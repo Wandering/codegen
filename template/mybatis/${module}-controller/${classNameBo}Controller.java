@@ -33,7 +33,7 @@ import cn.thinkjoy.common.managerui.controller.AbstractAdminController;
 
 @Controller
 @RequestMapping(value="/admin/${module}")
-public class ${className}Controller extends AbstractAdminController<I${className}Service>{
+public class ${className}Controller extends BaseController<I${className}Service>{
 
 
     @Autowired
