@@ -8,7 +8,7 @@
  * $Id:  ${className}Controller.java ${now?string('yyyy-MM-dd HH:mm:ss')} $
  */
 
-package ${basepackage}.${persistence};
+package ${basepackage}.controller;
 
 import ${mergePkgService}.I${className}Service;
 import cn.thinkjoy.common.managerui.dao.IResourceGridDAO;

@@ -63,10 +63,10 @@ public class GeneratorMain {
 		}
 
 
-		if(false) {
+		if(true) {
 			//yq add 进行对应的文件拷贝
 			String startupDir = GeneratorProperties.getRequiredProperty("startupDir");
-			String autoGenProject = startupDir + "-autogen/managerui-biz-startup";
+			String autoGenProject = startupDir + "-autogen";///managerui-biz-startup";
 			String basePackage = GeneratorProperties.getRequiredProperty("basepackage");
 			String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
 			String module = GeneratorProperties.getRequiredProperty("module");
@@ -278,7 +278,7 @@ public class GeneratorMain {
 			}
 		}
 
-
+Thread.sleep(20000);
 //		g.generateByAllTable("template/hibernate");
 //		g.generateByClass(Blog.class,"template_clazz");
 		 
