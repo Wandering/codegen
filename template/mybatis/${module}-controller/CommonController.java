@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(value="/admin/${module}")
-public class CommonController extends BaseController{
+public class CommonController extends AbstractCommonController{
     @Autowired
     private ServiceMaps serviceMaps;
 
