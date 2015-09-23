@@ -69,6 +69,11 @@ selectList
             SELECT LAST_INSERT_ID() AS ID
             </selectKey>
         </#if>
+        <#elseif table.getPkColumn().sqlType==12>
+            <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS ID
+</selectKey>
+        </#if>
     </insert>
 
     <!-- 更新 -->
