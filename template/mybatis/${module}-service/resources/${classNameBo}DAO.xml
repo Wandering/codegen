@@ -44,7 +44,7 @@ selectList
     <insert id="insert" parameterType="${className}">
         <#if isSKey>
             <selectKey keyProperty="id" resultType="String" order="BEFORE">
-                select uuid()
+                select replace(uuid(),'-','')
             </selectKey>
         </#if>
         INSERT INTO ${table.sqlName} (
@@ -221,7 +221,18 @@ selectList
 
     <select id="queryPage" resultType="${className}">
         SELECT
+        <if test="selector!=null">
+            <trim prefixOverrides=",">
+                <#list table.columns as column>
+                        <if test="selector.${column.columnNameFirstLower}!=null">
+                            , ${column.sqlName}
+                        </if>
+                </#list>
+            </trim>
+        </if>
+        <if test="selector==null">
         <include refid="Base_Column_List" />
+        </if>
         FROM ${table.sqlName}
         <where>
 
@@ -247,7 +258,18 @@ selectList
 
     <select id="like" parameterType="java.util.Map" resultType="${className}">
         SELECT
-        <include refid="Base_Column_List" />
+        <if test="selector!=null">
+            <trim prefixOverrides=",">
+                <#list table.columns as column>
+                    <if test="selector.${column.columnNameFirstLower}!=null">
+                        , ${column.sqlName}
+                    </if>
+                </#list>
+            </trim>
+        </if>
+        <if test="selector==null">
+            <include refid="Base_Column_List" />
+        </if>
         FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
@@ -264,7 +286,18 @@ selectList
 
     <select id="queryList" parameterType="java.util.Map" resultType="${className}">
         SELECT
-        <include refid="Base_Column_List" />
+        <if test="selector!=null">
+            <trim prefixOverrides=",">
+                <#list table.columns as column>
+                <if test="selector.${column.columnNameFirstLower}!=null">
+                    , ${column.sqlName}
+                </if>
+            </#list>
+        </trim>
+    </if>
+<if test="selector==null">
+<include refid="Base_Column_List" />
+</if>
         FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
@@ -280,7 +313,18 @@ selectList
 
     <select id="queryOne" parameterType="java.util.Map" resultType="${className}">
         SELECT
-        <include refid="Base_Column_List" />
+        <if test="selector!=null">
+            <trim prefixOverrides=",">
+                <#list table.columns as column>
+                    <if test="selector.${column.columnNameFirstLower}!=null">
+                        , ${column.sqlName}
+                    </if>
+                </#list>
+            </trim>
+        </if>
+        <if test="selector==null">
+            <include refid="Base_Column_List" />
+        </if>
         FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
