@@ -230,11 +230,13 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-                    if(!"role.ftl".equals(file.getName()) || !"user.ftl".equals(file.getName())) {
-                        Files.copy(file, new File(parentDirStr + "/" + file.getName()));
-                    }
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						if (!"role.ftl".equals(file.getName()) || !"user.ftl".equals(file.getName())) {
+							Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+						}
+					}
 				}
 			}
 
@@ -243,11 +245,13 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-                    if(!"role_page_grid.ftl".equals(file.getName()) || !"user_page_grid.ftl".equals(file.getName())) {
-                        Files.copy(file, new File(parentDirStr + "/" + file.getName()));
-                    }
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						if (!"role_page_grid.ftl".equals(file.getName()) || !"user_page_grid.ftl".equals(file.getName())) {
+							Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+						}
+					}
 				}
 			}
 
@@ -256,11 +260,13 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome/script");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-                    //if(!"role_biz_script.ftl".equals(file.getName()) || !"user_biz_script.ftl".equals(file.getName())) {
-                        Files.copy(file, new File(parentDirStr + "/" + file.getName()));
-                    //}
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						//if(!"role_biz_script.ftl".equals(file.getName()) || !"user_biz_script.ftl".equals(file.getName())) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+						//}
+					}
 				}
 			}
 
@@ -269,11 +275,13 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome/js");
-			for (File file : sourceDir.listFiles()) {
-				if (!file.isDirectory()) {
-                    //if(!"biz_role.ftl".equals(file.getName()) || !"UserController".equals(file.getName())) {
-                        Files.copy(file, new File(parentDirStr + "/" + file.getName()));
-                    //}
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						//if(!"biz_role.ftl".equals(file.getName()) || !"UserController".equals(file.getName())) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+						//}
+					}
 				}
 			}
 		}
