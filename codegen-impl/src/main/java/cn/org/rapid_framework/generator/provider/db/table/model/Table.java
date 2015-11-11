@@ -286,6 +286,10 @@ public class Table implements java.io.Serializable,Cloneable {
 		}
 		return _className;
 	}
+
+    public String getClassNameBoLowerCase() {
+        return getClassNameBo().toLowerCase();
+    }
 	/**
 	 * ZhangHuihua@msn.com 返回值为getClassNameBo()的第一个字母小写,如className=User,则ClassNameFirstLower=user
 	 * @return
