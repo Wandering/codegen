@@ -195,6 +195,7 @@ public class GeneratorFacade {
 					}
 
 				}
+				
 				if(System.getProperty("os.name").startsWith("Windows")){
 //					Runtime.getRuntime().exec("xcopy /P " + startupDir + " " + autoGenProject);
 					Runtime.getRuntime().exec("xcopy /E/I " + startupDir + " " + autoGenProject);
