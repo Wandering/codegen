@@ -2,8 +2,8 @@
 <#list tables as table>
 <#assign className = table.classNameBo>
 <#assign classNameLower = className?uncap_first>
-INSERT INTO `${module}_model`(`id`,`name`,`tblName`,`description`)
-VALUES('${table.seq}','${table.name}','${table.sqlName}','${table.description}');
+INSERT INTO `${module}_model`(`id`,`name`,`tblName`,`description`, `creator`, `createDate`, `lastModifier`, `lastModDate`, `status`)
+VALUES('${table.seq}','${table.name}','${table.sqlName}','${table.description}', 0, 1, 0, 1, 10);
 </#list>
 
 
@@ -44,8 +44,8 @@ VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${
 
   -- resource_grid
   <#list table.columns as column>
-      INSERT INTO `${module}_resource_grid` (`id`,`resId`,`displayName`,`colId`,`orderNum`,`width`,`editoptions`,`edittype`,`unformat`,`description`,`moduleName`)
-      VALUES(${resourceGridId},${table.seq},'${column.name}','${column.sqlName}',${column_index},200,'{}',null,'','${column.description}','${classNameAllLower}');
+      INSERT INTO `${module}_resource_grid` (`id`,`resId`,`displayName`,`colId`,`orderNum`,`width`,`editoptions`,`edittype`,`unformat`,`description`,`moduleName`, `creator`, `createDate`, `lastModifier`, `lastModDate`, `status`)
+      VALUES(${resourceGridId},${table.seq},'${column.name}','${column.sqlName}',${column_index},200,'{}',null,'','${column.description}','${classNameAllLower}', 0, 1, 0, 1, 0);
       <#assign resourceGridId=resourceGridId+1/>
   </#list>
 <#assign resourceId=resourceId+1/>
