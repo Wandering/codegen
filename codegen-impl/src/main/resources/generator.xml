@@ -7,16 +7,18 @@
         2.可以引用环境变量: ${env.JAVA_HOME} or System.properties: ${user.home},property之间也可以相互引用
     </comment>
 
-    <entry key="module">ucm</entry>
-    <entry key="basepackage">cn.thinkjoy.ucm</entry>
+    <entry key="module">managerui-biz-startup</entry>
+    <entry key="basepackage">cn.thinkjoy</entry>
     <entry key="persistence">dao</entry>
 
     <!-- jsp namespace: web/${namespace}/${className}/list.jsp -->
     <entry key="namespace">pages</entry>
 
-    <entry key="startupDir">/Users/wdong/workspace/managerui-biz-startup</entry>
+    <!--  windows系统 路径为“\\” 双反斜杠 start  -->
+    <entry key="startupDir">F:\\env\\demo\\managerui-biz-startup</entry>
 
     <entry key="outRoot">${user.dir}/generator-output</entry>
+    <!--  windows系统 路径为“\\” 双反斜杠 end  -->
 
     <!-- 需要移除的表名前缀,使用逗号进行分隔多个前缀,示例值: t_,v_ -->
     <entry key="tableRemovePrefixes"></entry>
@@ -35,12 +37,12 @@
     <entry key="java_typemapping.java.sql.Clob">java.lang.String</entry>
 
     <!-- Mysql -->
-    <entry key="jdbc.databasename">ucenter</entry>
-    <entry key="table.pre">ucm_user</entry>
-    <entry key="jdbc.url">jdbc:mysql://172.16.120.107:3306/ucenter?useUnicode=true&amp;characterEncoding=UTF-8</entry>
+    <entry key="jdbc.databasename">cmc1</entry>
+    <entry key="table.pre">cmc1</entry>
+    <entry key="jdbc.url">jdbc:mysql://localhost:3306/cmc1?useUnicode=true&amp;characterEncoding=UTF-8</entry>
     <entry key="jdbc.driver">com.mysql.jdbc.Driver</entry>
     <entry key="jdbc.username">root</entry>
-    <entry key="jdbc.password">weixiao123</entry>
+    <entry key="jdbc.password">root</entry>
 
     <!-- Oracle		jdbc:oracle:oci:@tnsname_devdb
     <entry key="jdbc.url">jdbc:oracle:thin:@192.168.0.177:1521:[sid]</entry>

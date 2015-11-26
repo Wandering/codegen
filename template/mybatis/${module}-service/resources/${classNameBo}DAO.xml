@@ -68,10 +68,6 @@ selectList
             <selectKey resultType="java.lang.Long" keyProperty="id">
                 SELECT LAST_INSERT_ID() AS ID
             </selectKey>
-        <#elseif table.getPkColumn().sqlType==12>
-            <selectKey resultType="String" keyProperty="id">
-                SELECT LAST_INSERT_ID() AS ID
-            </selectKey>
         </#if>
     </insert>
 
