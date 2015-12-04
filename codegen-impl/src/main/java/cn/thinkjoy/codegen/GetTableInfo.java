@@ -70,8 +70,13 @@ public class GetTableInfo {
 
         for (Table t : tables) {
 
-            sb.append("<span>表名：").append(t.getSqlName()).append("(").append(t.getName()).append(")</span>");
-            sb.append("<table border=\"1\"><tr><th>列名</th><th>类型</th><th>长度</th><th>是否主键</th><th>说明</th></tr>");
+            // 模型名称|模型菜单名称|模型父菜单名称|继承体系  换行 模型描述    示例：'市数据|市管理|地域信息管理|CreateBaseDomain\n市基本信息'
+            sb.append("<span>表名：").append(t.getSqlName()).append("(")
+                    .append("模型名称:").append(t.getName()).append(",模型菜单名称:").append(t.getResName())
+                    .append(",模型父菜单名称:").append(t.getParentResName()).append(",继承体系:").append(t.getParentClassName())
+                    .append(",模型描述:").append(t.getDescription()).append(")</span>");
+
+            sb.append("<table border=\"1\"><tr><th>列名</th><th>类型</th><th>长度</th><th>是否主键</th><th>说明</th><th>备注</th></tr>");
 
             LinkedHashSet<Column> columnList = t.getColumns();
             for (Column column : columnList) {
@@ -79,7 +84,9 @@ public class GetTableInfo {
                         .append("<td>").append(column.getSqlTypeName()).append("</td>")
                         .append("<td>").append(column.getSize()).append("</td>")
                         .append("<td>").append(column.isPk() ? "是" : "").append("</td>")
-                        .append("<td>").append(column.getRemarks()).append("</td>").append("</tr>");
+                        .append("<td>").append(column.getName()).append("</td>")
+                        .append("<td>").append(column.getRemarks().split("\\|").length > 1 ? column.getDescription() : "")
+                        .append("</td>").append("</tr>");
             }
             sb.append("</table>").append("<br/>");
         }
