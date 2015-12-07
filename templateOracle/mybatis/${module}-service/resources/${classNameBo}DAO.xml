@@ -35,6 +35,10 @@ selectList
 -->
 
 <#assign isSKey = false>
+<#assign issubmeter = false>
+<#if table.submeterTable==true>
+<#assign issubmeter = true>
+</#if>
 
 <#list table.columns as column>
 <#if column=='id'>
@@ -57,10 +61,10 @@ selectList
             </selectKey>
         <#else>
             <selectKey resultType="java.lang.Long" keyProperty="id" order="BEFORE">
-                SELECT SEQ_${table.sqlName}.nextval AS Id FROM DUAL
+                SELECT SEQ_<#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>.nextval AS Id FROM DUAL
             </selectKey>
         </#if>
-        INSERT INTO ${table.sqlName} (
+        INSERT INTO <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>(
         <#list table.columns as column>
                 "${column.sqlName?upper_case}"<#if column_has_next>,</#if>
         </#list>
@@ -83,7 +87,7 @@ selectList
 
     <!-- 更新 -->
     <update id="update" parameterType="${className}">
-        UPDATE ${table.sqlName}
+        UPDATE <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="SET" suffixOverrides=",">
         <#list table.notPkColumns as column>
             <if test="${column.columnNameFirstLower}!=null">
@@ -100,7 +104,7 @@ selectList
     </update>
 
     <update id="updateMap">
-        UPDATE ${table.sqlName}
+        UPDATE <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="SET" suffixOverrides=",">
         <#list table.notPkColumns as column>
             <if test="map.${column.columnNameFirstLower}!=null">
@@ -113,7 +117,7 @@ selectList
     </update>
 
     <update id="updateByCondition">
-        UPDATE ${table.sqlName}
+        UPDATE <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="SET" suffixOverrides=",">
             <#list table.notPkColumns as column>
             <if test="update.${column.columnNameFirstLower}!=null">
@@ -132,7 +136,7 @@ selectList
     </update>
 
     <insert id="insertMap" >
-        INSERT INTO ${table.sqlName} (
+        INSERT INTO <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if> (
         <#list table.columns as column>
             <#if "id"!=column >
                     "${column.sqlName?upper_case}"<#if column_has_next>,</#if>
@@ -144,7 +148,7 @@ selectList
     <#list table.columns as column>
     <#if "id"!=column >
     <@mapperEl 'map.'+column.columnNameFirstLower /><#if column_has_next>,</#if>
-    <#elseif  !isSKey>SEQ_${table.sqlName}.nextval <#if column_has_next>,</#if>
+    <#elseif  !isSKey>SEQ_<#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>.nextval <#if column_has_next>,</#if>
             </#if>
             </#list>
             )
@@ -152,7 +156,7 @@ selectList
 
 
     <update id="updateNull" parameterType="${className}">
-        UPDATE ${table.sqlName}
+        UPDATE <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="SET" suffixOverrides=",">
             <#list table.notPkColumns as column>
             "${column.sqlName?upper_case}" = <@mapperEl column.columnNameFirstLower/>,
@@ -167,7 +171,7 @@ selectList
     <#if idJavaType!="">
         <!-- 按Id删除 -->
         <delete id="deleteById" parameterType="${table.idColumn.javaType}">
-        DELETE FROM ${table.sqlName}
+        DELETE FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.compositeIdColumns as column>
             AND "${column.sqlName?upper_case}" = <@mapperEl 'id'/>
@@ -176,7 +180,7 @@ selectList
         </delete>
     </#if>
     <delete id="deleteByCondition" parameterType="java.util.Map">
-        DELETE FROM ${table.sqlName}
+        DELETE FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="${column.columnNameFirstLower}!=null">
@@ -187,14 +191,14 @@ selectList
     </delete>
 
     <delete id="deleteByProperty" parameterType="java.util.Map">
-    DELETE FROM ${table.sqlName} WHERE
+    DELETE FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if> WHERE
     <@jspEl 'property'/> = <@mapperEl 'value'/>
     </delete>
 <#if idJavaType!="">
     <select id="fetch" parameterType="${table.idColumn.javaType}" resultType="${className}">
         SELECT
         <include refid="Base_Column_List" />
-        FROM ${table.sqlName}
+        FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.compositeIdColumns as column>
             AND "${column.sqlName?upper_case}" = <@mapperEl 'id'/>
@@ -203,20 +207,21 @@ selectList
     </select>
 </#if>
     <select id="findOne" parameterType="java.util.Map" resultType="${className}">
+    SELECT * FROM(
     SELECT
     <include refid="Base_Column_List" />
-    FROM ${table.sqlName} WHERE
+    FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if> WHERE
     <@jspEl 'property'/> = <@mapperEl 'value'/>
-    and rownum =1
     <if test="orderBy!=null">
         ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
     </if>
+    ) a where rownum =1
     </select>
 
     <select id="findList" parameterType="java.util.Map" resultType="${className}">
     SELECT
     <include refid="Base_Column_List" />
-    FROM ${table.sqlName} WHERE
+    FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if> WHERE
     <@jspEl 'property'/> = <@mapperEl 'value'/>
     <if test="orderBy!=null">
         ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
@@ -226,17 +231,18 @@ selectList
     <select id="findAll" resultType="${className}">
     SELECT
     <include refid="Base_Column_List" />
-    FROM ${table.sqlName}
+    FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
     <if test="orderBy!=null">
         ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
     </if>
     </select>
 
     <select id="queryPage" resultType="${className}">
-        SELECT a.* from (
-        SELECT ROWNUM rn,
+        SELECT b.* from (
+        SELECT ROWNUM rn,a.* from (
+        SELECT
         <include refid="Base_Column_List" />
-        FROM ${table.sqlName}
+        FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <where>
 
             <if test="condition.whereSql != null">
@@ -249,24 +255,24 @@ selectList
                 </if>
             </#list>
 
-            <if test="offset != null">
-                and <@jspEl 'offset+rows'/> >=ROWNUM
-            </if>
+
         </where>
         <if test="orderBy!=null">
         ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
         </if>
-                )a
-
+                )a <if test="offset != null">
+            where <@jspEl 'offset+rows'/> >=ROWNUM
+            </if>
+        )b
         <if test="offset != null">
-        where a.rn><@jspEl 'offset'/>
+        where b.rn><@jspEl 'offset'/>
         </if>
     </select>
 
     <select id="like" parameterType="java.util.Map" resultType="${className}">
         SELECT
         <include refid="Base_Column_List" />
-        FROM ${table.sqlName}
+        FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="condition.${column.columnNameFirstLower}!=null">
@@ -283,7 +289,7 @@ selectList
     <select id="queryList" parameterType="java.util.Map" resultType="${className}">
         SELECT
         <include refid="Base_Column_List" />
-        FROM ${table.sqlName}
+        FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="condition.${column.columnNameFirstLower}!=null">
@@ -297,9 +303,10 @@ selectList
     </select>
 
     <select id="queryOne" parameterType="java.util.Map" resultType="${className}">
+    SELECT * FROM (
         SELECT
         <include refid="Base_Column_List" />
-        FROM ${table.sqlName}
+        FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
             <if test="condition.${column.columnNameFirstLower}!=null">
@@ -307,17 +314,18 @@ selectList
             </if>
             </#list>
         </trim>
-        and rownum=1
+
         <if test="orderBy!=null">
         ORDER BY <@jspEl 'orderBy'/> <@jspEl 'sortBy'/>
         </if>
+    ) a where  rownum=1
     </select>
 
     <select id="count" resultType="java.lang.Integer">
     <#if table.pkCount!=0 >
-    SELECT count(${table.idColumn.sqlName?upper_case}) FROM ${table.sqlName}
+    SELECT count(${table.idColumn.sqlName?upper_case}) FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
     <#else>
-        SELECT count(*) FROM ${table.sqlName}
+        SELECT count(*) FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
     </#if>
     <where>
         <#list table.columns as column>
@@ -331,13 +339,13 @@ selectList
     <select id="selectMaxId" resultType="${table.idColumn.javaType}">
         SELECT
         MAX(ID)
-        FROM ${table.sqlName}
+        FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if>
     </select>
 </#if>
 <#if table.idColumn?exists>
     <delete id="deleteByIds" parameterType="java.util.List">
 
-    DELETE FROM ${table.sqlName} where ${table.idColumn.sqlName?upper_case} in
+    DELETE FROM <#if issubmeter><@jspEl '${table.submeterTablePrefixName}'/>_${table.subSqlName}<#else>${table.sqlName}</#if> where ${table.idColumn.sqlName?upper_case} in
 
     <foreach item="item" collection="list" open="(" separator="," close=")">
         <#if isSKey>
