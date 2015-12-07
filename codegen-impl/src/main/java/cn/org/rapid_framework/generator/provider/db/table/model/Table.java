@@ -24,6 +24,34 @@ public class Table implements java.io.Serializable,Cloneable {
         ORACLE_KEY_COLUMN_SETS.add("start");
     }
 
+	//分表 变量名称
+	String submeterTablePrefixName ;
+	boolean submeterTable =false ;
+	String subSqlName ;
+
+	public String getSubmeterTablePrefixName() {
+		return submeterTablePrefixName;
+	}
+
+	public void setSubmeterTablePrefixName(String submeterTablePrefixName) {
+		this.submeterTablePrefixName = submeterTablePrefixName;
+	}
+
+	public boolean isSubmeterTable() {
+		return submeterTable;
+	}
+
+	public void setSubmeterTable(boolean submeterTable) {
+		this.submeterTable = submeterTable;
+	}
+
+	public String getSubSqlName() {
+		return subSqlName;
+	}
+
+	public void setSubSqlName(String subSqlName) {
+		this.subSqlName = subSqlName;
+	}
 
 	String sqlName;
 	String remarks;

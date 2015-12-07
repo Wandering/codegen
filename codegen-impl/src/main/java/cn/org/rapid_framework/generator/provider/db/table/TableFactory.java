@@ -302,13 +302,37 @@ public class TableFactory {
 
 
 	private List getAllOracleTables(Connection conn) throws SQLException {
-		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where  b.COMMENTS is not NULL ";
+		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME";
 //		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME like upper('%order%')  ";
 //		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME  where b.TABLE_NAME not  LIKE upper('zyj%')  ";
 //		String sql = "select a.TABLE_NAME as TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME  where b.TABLE_NAME   LIKE upper('zyj%')  ";
 //		String sql = "select a.TABLE_NAME, b.COMMENTS  from USER_TABLES a left join  USER_TAB_COMMENTS b on a.TABLE_NAME=b.TABLE_NAME where a.TABLE_NAME = 'CAS_CLASSES'";
 		PreparedStatement pre = conn.prepareStatement(sql);// 实例化预编译语句
 		ResultSet rs = pre.executeQuery();
+
+
+		String submeterTables = "";
+		String [] submeterTableArray = null;
+		String submeterTablePrefixName = "";
+		try {
+			submeterTables = GeneratorProperties.getRequiredProperty("jdbc.submeterTables");
+			submeterTableArray  = submeterTables.split(",");
+
+		}catch (Exception ex)
+		{
+
+		}
+
+
+		try {
+			submeterTablePrefixName = GeneratorProperties.getRequiredProperty("jdbc.submeterTablePrefixName");
+		}catch (Exception ex)
+		{
+
+		}
+
+
+
 
 		if(tables.size() == 0) {
 			while (rs.next()) {
@@ -317,11 +341,20 @@ public class TableFactory {
 				tables.add(createOracleTable(conn, rs));
 			}
 
+
 			//handle number and parent props
 			String[] splits = null;
 			String className = "I";
 			String instanceName = "";
 			for(Table table : tables){
+				boolean issubmeter = isSubmeterTable(submeterTableArray, table.getSqlName());
+				table.setSubmeterTable(issubmeter);
+				if(issubmeter){
+					table.setSubmeterTablePrefixName(submeterTablePrefixName);
+					String subSqlName = table.getSqlName();
+					subSqlName = subSqlName.substring(subSqlName.indexOf("_")+1);
+					table.setSubSqlName(subSqlName);
+				}
 				table.setSeq(SeqGen.incr(SeqGen.MODEL));
 				table.setNumber(NumGen.genNum(table.getSeq()));
 				if(GeneratorMain.isStandard) {
@@ -329,7 +362,7 @@ public class TableFactory {
 					table.setParentId(parentResMap.get(table.getParentResName()).getSeq());
 				}
 				splits = table.getSqlName().toLowerCase().split("_");
-				int index=0;
+				int index=1;
 //				if(splits.length==1)
 //					index = 0;
 				for(int i = index; i < splits.length; i++){
@@ -348,6 +381,23 @@ public class TableFactory {
 	}
 
 
+	private boolean isSubmeterTable(String [] submeterTableArray,String TableName)
+	{
+
+		if(submeterTableArray==null)
+		{
+			return false;
+		}
+
+		for(String submeterTable : submeterTableArray)
+		{
+			if(submeterTable.toUpperCase().equals(TableName.toUpperCase()))
+				return true;
+		}
+
+		return false;
+	}
+
 	private Table createOracleTable(Connection conn, ResultSet rs) throws SQLException {
 		String realTableName = null;
 		try {
@@ -355,8 +405,28 @@ public class TableFactory {
 			//String schemaName = rs.getString("TABLE_SCHEM") == null ? "" : rs.getString("TABLE_SCHEM");
 			realTableName = rs.getString("TABLE_NAME");
 			String remarks = rs.getString("COMMENTS");//"REMARKS");
-			remarks="app|app管理|基础管理|CreateBaseDomain\n" +
-					"产品app";
+			if(remarks!=null && remarks.length() > 0)
+			{
+				String[] lines = remarks.split("\\n");
+				if(lines.length!=2)
+				{
+					remarks="app|app管理|基础管理|CreateBaseDomain\n" +
+							"产品app";
+				}else {
+					String[] comments = null;
+					comments = lines[0].split("\\|");
+					if(lines.length<3) {
+						remarks="app|app管理|基础管理|CreateBaseDomain\n" +
+								"产品app";
+					}
+
+				}
+			}else {
+				remarks="app|app管理|基础管理|CreateBaseDomain\n" +
+						"产品app";
+
+			}
+
 //			if(remarks == null && dbHelper.isOracleDataBase()) {
 //				remarks = getOracleTableComments(realTableName);
 //			}
