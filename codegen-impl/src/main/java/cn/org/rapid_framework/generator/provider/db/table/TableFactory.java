@@ -352,7 +352,7 @@ public class TableFactory {
 				if(issubmeter){
 					table.setSubmeterTablePrefixName(submeterTablePrefixName);
 					String subSqlName = table.getSqlName();
-					subSqlName = subSqlName.substring(subSqlName.indexOf("_")+1);
+//					subSqlName = subSqlName.substring(subSqlName.indexOf("_")+1);
 					table.setSubSqlName(subSqlName);
 				}
 				table.setSeq(SeqGen.incr(SeqGen.MODEL));
