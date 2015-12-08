@@ -160,7 +160,7 @@ public class ${className}ServiceImpl extends AbstractPageService<IBaseDAO<${clas
 //    public BizData4Page queryPageByDataPerm(String resUri, Map conditions, int curPage, int offset, int rows) {
 //        return super.doQueryPageByDataPerm(resUri, conditions, curPage, offset, rows);
 //    }
-
+<#if issubmeter>
 
     @Override
     //@CachePut(key = "#entity.id") 暂时不加缓存，使用的主键自增，并且没有返回整个对象  TODO 可以使用编程式解决
@@ -398,5 +398,5 @@ public class ${className}ServiceImpl extends AbstractPageService<IBaseDAO<${clas
     public int updateByCondition(String ${table.submeterTablePrefixName},Map<String, Object>updateMap,Map<String, Object>conditionMap){
         return ${classNameLower}DAO.updateByCondition(${table.submeterTablePrefixName},updateMap,conditionMap);
     }
-
+</#if>
 }
