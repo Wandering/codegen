@@ -362,7 +362,7 @@ public class TableFactory {
 					table.setParentId(parentResMap.get(table.getParentResName()).getSeq());
 				}
 				splits = table.getSqlName().toLowerCase().split("_");
-				int index=1;
+				int index=0;
 //				if(splits.length==1)
 //					index = 0;
 				for(int i = index; i < splits.length; i++){
