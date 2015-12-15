@@ -2,14 +2,7 @@ package cn.org.rapid_framework.generator.provider.db.table;
 
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +20,7 @@ import cn.org.rapid_framework.generator.provider.db.table.model.util.SeqGen;
 import cn.org.rapid_framework.generator.util.*;
 import cn.org.rapid_framework.generator.util.XMLHelper.NodeData;
 import cn.thinkjoy.codegen.GeneratorMain;
+import com.sun.deploy.util.StringUtils;
 
 /**
  * 
@@ -710,10 +704,45 @@ public class TableFactory {
 	               columnDefaultValue,
 	               remarks);
 	         BeanHelper.copyProperties(column,TableOverrideValuesProvider.getColumnOverrideValues(table,column));
-	         columns.add(column);
+			  if(JdbcConstants.ORACLE.equals(this.dbType) ) {
+				  if(!isdefaultTable(table.getSqlName()))
+				  {
+					  String normalJdbcJavaType = setJavaType(column,sqlType,size,
+							  decimalDigits);
+					  if(normalJdbcJavaType!=null) {
+					  		String javaType = GeneratorProperties.getProperty("java_typemapping."+normalJdbcJavaType,normalJdbcJavaType).trim();
+
+						  column.setJavaType(javaType);
+					  }
+				  }
+			  }
+			  columns.add(column);
 	    }
 	    columnRs.close();
 		return columns;
+	}
+
+	private String setJavaType(Column column,int sqlType,int size,int decimalDigits)
+	{
+		if (sqlType == Types.DECIMAL || sqlType == Types.NUMERIC) {
+			if(decimalDigits == 0) {
+				if (size < 5) {
+					return "java.lang.Short";
+				} else if (size < 10) {
+					return "java.lang.Integer";
+				} else {
+					return "java.lang.Long";
+				}
+			}else if(decimalDigits == 2)
+			{
+				return "java.math.BigDecimal";
+			}
+			else {
+				return "java.lang.Float";
+			}
+		}
+
+		return null;
 	}
 	
 	private ResultSet getColumnsResultSet(Table table) throws SQLException {
