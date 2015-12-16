@@ -12,5 +12,4 @@
     <description>${module} dubbo 服务消费配置 </description>
 
     <!-- 账号dubbo -->
-    <dubbo:reference id="iUserManagementFacade" interface="cn.thinkjoy.ucm.facade.IUserManagementFacade" check="false"/>
 </beans>

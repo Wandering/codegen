@@ -17,6 +17,8 @@
     <!--<dubbo:registry address="zookeeper://10.172.7.71:2181" />-->
     <dubbo:registry address="${'$'}{dubbo_zk_url}" file="/tmp/dubbo.cache"/>
 
+    <dubbo:protocol port="-1"/>
+
     <#list newtables as table>
     <bean id="${table.classNameBo}ServiceImpl" class="${basepackage}.service.impl.${table.classNameBo}ServiceImpl" />
     <dubbo:service id="${table.instanceName}Service" interface="${basepackage}.service.${table.className}Service" ref="${table.classNameBo}ServiceImpl"/>

@@ -26,8 +26,8 @@ VALUES('${prId}','/admin/${bizSys}/${key}','${prId}',0,'${prNumber}','${prNumber
 <#assign classNameAllLower = table.classNameBo?lower_case>
 
 
-INSERT INTO `${module}_resource`(`id`,`url`,`orderNum`,`parentId`,`number`,`longNumber`,`name`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`modelId`, `bizModelName`)
-VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${table.parentId}','${table.number}','${table.longnumber}','${table.resName}',0,${times},0,${times},null,'${table.seq}', '${classNameAllLower}');
+INSERT INTO `${module}_resource`(`id`,`url`,`orderNum`,`parentId`,`number`,`longNumber`,`name`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`modelId`, `bizModelName`,`status`)
+VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${table.parentId}','${table.number}','${table.longnumber}','${table.resName}',0,${times},0,${times},null,'${table.seq}', '${classNameAllLower}',0);
 
   <#assign className = table.classNameBo>
   <#assign classNameFirstLower = table.classNameFirstLower>
@@ -37,8 +37,8 @@ VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${
 
   -- resource_action
   <#list actions as ac>
-      INSERT INTO `${module}_resource_action` (`id`,`resourceId`,`name`,`actionAlias`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`)
-      VALUES(${resourceActionId},${table.seq},'${ac.name}','${ac.action}',0,${times},0,${times},'${ac.name}');
+      INSERT INTO `${module}_resource_action` (`id`,`resourceId`,`name`,`actionAlias`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`status`)
+      VALUES(${resourceActionId},${table.seq},'${ac.name}','${ac.action}',0,${times},0,${times},'${ac.name}',0);
       <#assign resourceActionId=resourceActionId+1/>
   </#list>
 

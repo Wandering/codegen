@@ -41,4 +41,9 @@ public class CommonController extends AbstractCommonController{
     public boolean getEnableDataPerm() {
         return false;
     }
+
+    @Override
+    protected void innerHandleDel(String mainObj, Map dataMap) {
+        getServiceMaps().get(mainObj).delete(dataMap.get("id"));
+    }
 }

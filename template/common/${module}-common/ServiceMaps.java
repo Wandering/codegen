@@ -44,7 +44,7 @@ public class ServiceMaps extends BaseServiceMaps{
         <#list newtables as table>
             <#assign className = table.classNameBo>
             <#assign classNameLower = className?uncap_first>
-        serviceMap.put("${classNameLower}",${classNameLower}Service);
+        serviceMap.put("${classNameLower?lower_case}",${classNameLower}Service);
         </#list>
     }
 

@@ -1,0 +1,71 @@
+<#include "/macro.include"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+           http://mybatis.org/schema/mybatis-spring      http://mybatis.org/schema/mybatis-spring.xsd
+           http://www.springframework.org/schema/aop     http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+           http://www.springframework.org/schema/tx      http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+       " >
+
+    <!-- 引入service的spring配置文件 -->
+    <import resource="classpath:springme.xml"/>
+
+    <bean id="freemarkerConfig"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/WEB-INF/view/" />
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="template_update_delay">0</prop>
+                <prop key="default_encoding">UTF-8</prop>
+                <prop key="number_format">0.##########</prop>
+                <prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+                <prop key="classic_compatible">true</prop>
+                <prop key="template_exception_handler">ignore</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
+    <context:annotation-config/>
+    <context:component-scan base-package="com.qtone.open"/>
+
+    <bean id="QTOAuthConfig" class="com.qtone.open.QTOpenApiConfig">
+        <property name="debugKey" value="<@jspEl 'debugKey'/>"/>
+        <property name="client_id" value="<@jspEl 'client_id'/>"/>
+        <property name="client_secret" value="<@jspEl 'client_secret'/>"/>
+        <property name="loginUrl" value="<@jspEl 'loginUrl'/>"/>
+        <property name="validateTokenUrl" value="<@jspEl 'validateTokenUrl'/>"/>
+        <property name="logoutPattern" value="<@jspEl 'logoutPattern'/>"/>
+        <property name="redirectUrlAfterLogin" value="<@jspEl 'redirectUrlAfterLogin'/>"/>
+        <property name="redirectUrlAfterLogout" value="<@jspEl 'redirectUrlAfterLogout'/>"/>
+        <property name="serverUri" value="<@jspEl 'serverUri'/>"/>
+        <property name="secret" value="<@jspEl 'secret'/>"/>
+        <property name="exclusions" value="/admin/xxx/*"/>
+        <property name="product" value="<@jspEl 'product'/>"/>
+        <property name="appKey" value="<@jspEl 'appKey'/>"/>
+    </bean>
+
+    <bean id="iqtoAuthListener" class="cn.thinkjoy.${module}.filter.AuthListener"/>
+
+
+    <bean id="QTOAAuthenticator"
+          class="com.qtone.open.ucm.client.QTOAAuthenticator">
+        <property name="qtOpenApiConfig" ref="QTOAuthConfig"/>
+        <property name="iqtoAuthListener" ref="iqtoAuthListener"/>
+    </bean>
+
+
+    <bean id="delegatingSecurityFilter" class="com.qtone.open.ucm.client.QTOAuthFilter">
+        <property name="authenticator" ref="QTOAAuthenticator"/>
+    </bean>
+
+    <bean id="springSecurityFilterChain" class="com.qtone.open.ucm.client.QTOAuthFilter">
+        <property name="authenticator" ref="QTOAAuthenticator"/>
+    </bean>
+
+
+</beans>
