@@ -2,12 +2,17 @@ package cn.thinkjoy.codegen;
 
 import cn.org.rapid_framework.generator.GeneratorFacade;
 import cn.org.rapid_framework.generator.GeneratorProperties;
+import cn.org.rapid_framework.generator.provider.db.DataSourceProvider;
 import cn.org.rapid_framework.generator.provider.db.table.TableFactory;
 import cn.org.rapid_framework.generator.util.JdbcConstants;
 import com.google.common.io.Files;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -36,6 +41,7 @@ public class GeneratorMain {
 		}
 		return  "mysql";
 	}
+
 	/**
 	 * 请直接修改以下代码调用不同的方法以执行相关生成任务.
 	 */
@@ -44,18 +50,17 @@ public class GeneratorMain {
 		String url = GeneratorProperties.getRequiredProperty("jdbc.url");
 		dbType = getDbType(url);
 		GeneratorFacade g = new GeneratorFacade();
-//		g.printAllTableNames();				//打印数据库中的表名称
-		
-		g.deleteOutRootDir();			//删除生成器的输出目录g
-//		g.generateByTable("ehr_salary","template/mybatis");	//通过数据库表生成文件,template为模板的根目录
-		if(JdbcConstants.ORACLE.equals(dbType)) {
+		boolean isFirstCreate = true;
+		String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
+		String module = GeneratorProperties.getRequiredProperty("module");
+
+		g.deleteOutRootDir();            //删除生成器的输出目录g
+		if (JdbcConstants.ORACLE.equals(dbType)) {
 			g.generateByAllTable("templateOracle/mybatis");    //自动搜索数据库中的所有表并生成文件,template为模板的根目录
 			if (isStandard) {
 				g.generateByTableList("templateOracle/common");
 			}
-		}
-		else
-		{
+		} else {
 			g.generateByAllTable("template/mybatis");    //自动搜索数据库中的所有表并生成文件,template为模板的根目录
 			if (isStandard) {
 				g.generateByTableList("template/common");
@@ -63,17 +68,28 @@ public class GeneratorMain {
 		}
 
 
-		if(true) {
+		if(isFirstCreate) {
 			//yq add 进行对应的文件拷贝
 			String startupDir = GeneratorProperties.getRequiredProperty("startupDir");
-			String autoGenProject = startupDir + "-autogen";///managerui-biz-startup";
+//			String autoGenProject = startupDir + "-autogen";///managerui-biz-startup";
+			String autoGenProject = startupDir ;///managerui-biz-startup";
 			String basePackage = GeneratorProperties.getRequiredProperty("basepackage");
-			String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
-			String module = GeneratorProperties.getRequiredProperty("module");
+//			String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
+//			String module = GeneratorProperties.getRequiredProperty("module");
 			String basePackageDir = basePackage.replace(".", "/");
 
+			String domain_projectPath = autoGenProject+"/"+ module + "-domain";
+			String service_projectPath = autoGenProject+"/"+ module + "-service";
+			String admin_projectPath = autoGenProject+"/"+ module + "-admin-war";
+			String api_projectPath = autoGenProject+"/"+ module + "-api";
+			String web_projectPath = autoGenProject+"/"+ module + "-web-war";
+//			String initSqldir = outRoot+"/" + module + "-initdatasql";
 			//domain拷贝
-			String parentDirStr = autoGenProject + "/mubs-domain/src/main/java/" + basePackageDir + "/domain";
+			//autosetup工程位置
+			/*****
+			 * 复制domain
+			 */
+			String parentDirStr = domain_projectPath + "/src/main/java/" + basePackageDir + "/domain";
 			File parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			File sourceDir = new File(outRoot + "/" + module + "-domain");
@@ -95,10 +111,11 @@ public class GeneratorMain {
 						((Flushable) allDocsFileAppendable).flush();
 					}
 				}
+
 			}
 
 			//dao拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/main/java/" + basePackageDir + "/dao";
+			parentDirStr = service_projectPath + "/src/main/java/" + basePackageDir + "/dao";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			if(sourceDir.listFiles()!=null) {
@@ -109,7 +126,7 @@ public class GeneratorMain {
 			}
 
 			//mybatis拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/main/resources/mybatis";
+			parentDirStr = service_projectPath + "/src/main/resources/mybatis";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			if(sourceDir.listFiles()!=null) {
@@ -120,7 +137,7 @@ public class GeneratorMain {
 			}
 
 			//dubbo拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/main/resources/dubbo";
+			parentDirStr = service_projectPath + "/src/main/resources/dubbo";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/dubbo");
@@ -130,7 +147,7 @@ public class GeneratorMain {
 
 
 			//api拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/main/java/" + basePackageDir + "/service";
+			parentDirStr = service_projectPath + "/src/main/java/" + basePackageDir + "/service";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-api");
@@ -143,7 +160,7 @@ public class GeneratorMain {
 			}
 
 			//api-impl拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/main/java/" + basePackageDir + "/service/impl";
+			parentDirStr = service_projectPath + "/src/main/java/" + basePackageDir + "/service/impl";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-api/impl");
@@ -154,7 +171,7 @@ public class GeneratorMain {
 			}
 
 			//api-test拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/test/java/" + basePackageDir + "/service/impl";
+			parentDirStr = service_projectPath + "/src/test/java/" + basePackageDir + "/service/impl";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			if(sourceDir.listFiles()!=null) {
@@ -166,7 +183,7 @@ public class GeneratorMain {
 
 
 			//facade拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/main/java/" + basePackageDir + "/facade";
+			parentDirStr = service_projectPath + "/src/main/java/" + basePackageDir + "/facade";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-facade");
@@ -179,7 +196,7 @@ public class GeneratorMain {
 			}
 
 			//facade-impl拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/main/java/" + basePackageDir + "/facade/impl";
+			parentDirStr = service_projectPath + "/src/main/java/" + basePackageDir + "/facade/impl";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-facade/impl");
@@ -190,7 +207,7 @@ public class GeneratorMain {
 			}
 
 			//facade-test拷贝
-			parentDirStr = autoGenProject + "/mubs-service/src/test/java/" + basePackageDir + "/facade/impl";
+			parentDirStr = service_projectPath + "/src/test/java/" + basePackageDir + "/facade/impl";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-facade/test");
@@ -200,7 +217,7 @@ public class GeneratorMain {
 				}
 			}
 			//war-maps拷贝
-			parentDirStr = autoGenProject + "/mubs-admin-war/src/main/java/" + basePackageDir + "/common";
+			parentDirStr = admin_projectPath + "/src/main/java/" + basePackageDir + "/common";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-common");
@@ -211,7 +228,7 @@ public class GeneratorMain {
 			}
 
 			//war-controller拷贝
-			parentDirStr = autoGenProject + "/mubs-admin-war/src/main/java/" + basePackageDir + "/controller";
+			parentDirStr = admin_projectPath + "/src/main/java/" + basePackageDir + "/controller";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-controller");
@@ -225,8 +242,19 @@ public class GeneratorMain {
 				}
 			}
 
+			//war-filter拷贝
+			parentDirStr = admin_projectPath + "/src/main/java/" + basePackageDir + "/filter";
+			parentDir = new File(parentDirStr);
+			parentDir.mkdirs();
+			sourceDir = new File(outRoot + "/" + module + "-filter");
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+				}
+			}
+
 			//war-ftl拷贝
-			parentDirStr = autoGenProject + "/mubs-admin-war/src/main/webapp/WEB-INF/view/module";
+			parentDirStr = admin_projectPath + "/src/main/webapp/WEB-INF/view/module";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view");
@@ -241,7 +269,7 @@ public class GeneratorMain {
 			}
 
 			//war-custome-ftl拷贝
-			parentDirStr = autoGenProject + "/mubs-admin-war/src/main/webapp/WEB-INF/view/module/custome";
+			parentDirStr = admin_projectPath + "/src/main/webapp/WEB-INF/view/module/custome";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome");
@@ -256,7 +284,7 @@ public class GeneratorMain {
 			}
 
 			//war-custome-script-ftl拷贝
-			parentDirStr = autoGenProject + "/mubs-admin-war/src/main/webapp/WEB-INF/view/module/custome/script";
+			parentDirStr = admin_projectPath + "/src/main/webapp/WEB-INF/view/module/custome/script";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome/script");
@@ -271,7 +299,7 @@ public class GeneratorMain {
 			}
 
 			//war-custome-js-ftl拷贝
-			parentDirStr = autoGenProject + "/mubs-admin-war/src/main/webapp/WEB-INF/view/module/custome/js";
+			parentDirStr = admin_projectPath + "/src/main/webapp/WEB-INF/view/module/custome/js";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 			sourceDir = new File(outRoot + "/" + module + "-view/custome/js");
@@ -284,9 +312,47 @@ public class GeneratorMain {
 					}
 				}
 			}
+
+			/*****
+			 * 复制api
+			 */
+			parentDirStr = api_projectPath+ "/src/main/java/" + basePackageDir + "/api";
+			parentDir = new File(parentDirStr);
+			parentDir.mkdirs();
+
+			/*****
+			 * 复制api
+			 */
+			parentDirStr = web_projectPath + "/src/main/java/" + basePackageDir + "/web-war";
+			parentDir = new File(parentDirStr);
+			parentDir.mkdirs();
+
+			//复制build.gradle
+			copyBuildGradle(outRoot,"domain",domain_projectPath);
+			copyBuildGradle(outRoot,"admin",admin_projectPath);
+			copyBuildGradle(outRoot,"api",api_projectPath);
+			copyBuildGradle(outRoot,"service",service_projectPath);
+			copyBuildGradle(outRoot,"web",web_projectPath);
+			//项目build.gradle
+			copyBuildGradle(outRoot,"project",startupDir);
+			//copy-test
+			copyDirectiory(outRoot+"/test",admin_projectPath+"/src/test");
+			copyDirectiory(outRoot+"/test",web_projectPath+"/src/test");
+			//copy-admin-resource
+			copyDirectiory(outRoot+"/admin/resources",admin_projectPath+"/src/main/resources");
+			copyDirectiory(outRoot+"/service/resources",service_projectPath+"/src/main/resources");
+			copyDirectiory(outRoot.substring(0,outRoot.lastIndexOf("/"))+"/common/webapp",admin_projectPath+"/src/main/webapp");
+
+
+			GeneratorMain gg = new GeneratorMain();
+
+			String initSqldir = outRoot + "/" + module + "-initdatasql";
+			List<String> list = gg.insertResuorce(initSqldir);
+			gg.insertSql(list);
+
 		}
 
-Thread.sleep(20000);
+		Thread.sleep(20000);
 //		g.generateByAllTable("template/hibernate");
 //		g.generateByClass(Blog.class,"template_clazz");
 		 
@@ -295,4 +361,143 @@ Thread.sleep(20000);
 		//Runtime.getRuntime().exec("cmd.exe /c start "+GeneratorProperties.getRequiredProperty("outRoot"));
 
 	}
+
+	private static void copyBuildGradle(String outRoot,String name,String destDir)  {
+		File sourceDir = new File(outRoot + "/" + name);
+		if(sourceDir.listFiles()!=null) {
+			for (File file : sourceDir.listFiles()) {
+				if (!file.isDirectory()) {
+					if(file.getName().endsWith(".gradle")) {
+						//if(!"biz_role.ftl".equals(file.getName()) || !"UserController".equals(file.getName())) {
+						try {
+							Files.copy(file, new File(destDir + "/" + file.getName()));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						//}
+					}
+				}
+			}
+		}
+	}
+
+	private static void copyDirectiory(String sourceDir,String targetDir) throws IOException{
+
+		//新建目标目录
+
+		(new File(targetDir)).mkdirs();
+
+		//获取源文件夹当下的文件或目录
+		File[] file=(new File(sourceDir)).listFiles();
+
+		for (int i = 0; i < file.length; i++) {
+			if(file[i].isFile()){
+				//源文件
+				File sourceFile=file[i];
+				//目标文件
+				File targetFile=new File(new File(targetDir).getAbsolutePath()+File.separator+file[i].getName());
+
+				Files.copy(sourceFile, targetFile);
+
+			}else if(file[i].isDirectory()){
+				//准备复制的源文件夹
+				String dir1=sourceDir+"/"+file[i].getName();
+				//准备复制的目标文件夹
+				String dir2=targetDir+"/"+file[i].getName();
+
+				copyDirectiory(dir1, dir2);
+			}
+		}
+
+	}
+
+
+	private List<String> insertResuorce(String initSqldir)
+	{
+		String initSqldirFile = initSqldir+"/init.sql";
+		List<String> sqlList = new ArrayList<String>();
+
+		try {
+			InputStream sqlFileIn = new FileInputStream(initSqldirFile);
+
+			StringBuffer sqlSb = new StringBuffer();
+			byte[] buff = new byte[1024];
+			int byteRead = 0;
+			while ((byteRead = sqlFileIn.read(buff)) != -1) {
+				sqlSb.append(new String(buff, 0, byteRead));
+			}
+
+			// Windows 下换行是 /r/n, Linux 下是 /n
+			String[] sqlArr = sqlSb.toString().split(";");
+			for (int i = 0; i < sqlArr.length; i++) {
+				String sql = sqlArr[i].replaceAll("--.*", "").trim();
+				if (!sql.equals("")) {
+					sqlList.add(sql);
+				}
+			}
+			return sqlList;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
+
+	private void insertSql(List<String> sqlList)
+	{
+		String role = "insert into test_role (id, `name` ,  `description` ,`status`," +
+				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` ) values(1,'超级管理员','超级管理员',0,0,0,0,0)";
+		String roleUser = "insert into test_role_user(`status` ,`userId`,`roleId` ," +
+				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`)values(0,1,1,0,0,0,0)";
+		String menu = "insert into test_role_resource ( `status`, `resourceId` , `resourceActionId`, `roleId`," +
+				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`  )" +
+				"select 0,id,0,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from test_resource";
+		String menuAction = "insert into test_role_resource (`status`,`resourceId` ,`resourceActionId`,`roleId`," +
+				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`  )" +
+				"select 0,resourceId,id,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from test_resource_action";
+		sqlList.add(role);
+		sqlList.add(roleUser);
+		sqlList.add(menu);
+		sqlList.add(menuAction);
+
+		//按新的方式处理
+		Connection conn = null;
+//		Connection schemaConn = DataSourceProvider.getSchemaConnection();
+//		DatabaseMetaData dbMetaData = conn.getMetaData();
+//		ResultSet rs = dbMetaData.getTables(conn.getCatalog(), getSchema(), null, null);
+
+		Statement stmt = null;
+		try {
+			conn = DataSourceProvider.getConnection();
+			conn.setAutoCommit(false);
+			stmt = conn.createStatement();
+			for (String sql : sqlList) {
+				System.out.println(sql);
+				stmt.addBatch(sql);
+				stmt.executeBatch();
+			}
+//			int[] rows = stmt.executeBatch();
+//			System.out.println("Row count:" + Arrays.toString(rows));
+			conn.commit();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			try {
+				conn.rollback();
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+
 }
+

@@ -144,9 +144,9 @@ public class Column implements java.io.Serializable,Cloneable{
         } else {
             this.description = nds[0];
         }
-		
+
 		GLogger.trace(sqlName + " isPk -> " + _isPk);
-		
+
 		initOtherProperties();
 	}
 
