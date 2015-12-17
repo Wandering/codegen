@@ -35,12 +35,6 @@
     <entry key="java_typemapping.java.sql.Clob">java.lang.String</entry>
 
     <!-- Mysql -->
-    <!--<entry key="table.pre">qfd</entry>-->
-    <!--<entry key="jdbc.databasename">ucenter-test</entry>-->
-    <!--<entry key="jdbc.url">jdbc:mysql://ops.thinkjoy.cn:33061/ucenter-test?useUnicode=true&amp;characterEncoding=UTF-8</entry>-->
-    <!--<entry key="jdbc.driver">com.mysql.jdbc.Driver</entry>-->
-    <!--<entry key="jdbc.username">qyang</entry>-->
-    <!--<entry key="jdbc.password">Qyang@2015</entry>-->
     <entry key="table.pre">qfd</entry>
     <entry key="jdbc.databasename">qfd</entry>
     <entry key="jdbc.url">jdbc:mysql://10.253.8.192:3306/qfd?useUnicode=true&amp;characterEncoding=UTF-8</entry>
