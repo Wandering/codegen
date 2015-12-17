@@ -344,11 +344,10 @@ public class GeneratorMain {
 			copyDirectiory(outRoot.substring(0,outRoot.lastIndexOf("/"))+"/common/webapp",admin_projectPath+"/src/main/webapp");
 
 
-			GeneratorMain gg = new GeneratorMain();
 
 			String initSqldir = outRoot + "/" + module + "-initdatasql";
-			List<String> list = gg.insertResuorce(initSqldir);
-			gg.insertSql(list,module);
+			List<String> list = insertResuorce(initSqldir);
+			insertSql(list, module);
 
 		}
 
@@ -412,7 +411,7 @@ public class GeneratorMain {
 	}
 
 
-	private List<String> insertResuorce(String initSqldir)
+	private static List<String> insertResuorce(String initSqldir)
 	{
 		String initSqldirFile = initSqldir+"/init.sql";
 		List<String> sqlList = new ArrayList<String>();
@@ -443,7 +442,7 @@ public class GeneratorMain {
 	}
 
 
-	private void insertSql(List<String> sqlList,String model)
+	private static void insertSql(List<String> sqlList,String model)
 	{
 		String role = "insert into "+model+"_role (id, `name` ,  `description` ,`status`," +
 				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` ) values(1,'超级管理员','超级管理员',0,0,0,0,0)";
