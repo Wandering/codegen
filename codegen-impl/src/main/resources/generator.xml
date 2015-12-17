@@ -7,27 +7,25 @@
         2.可以引用环境变量: ${env.JAVA_HOME} or System.properties: ${user.home},property之间也可以相互引用
     </comment>
 
-    <entry key="module">managerui-biz-startup</entry>
-    <entry key="basepackage">cn.thinkjoy</entry>
+    <entry key="module">qfd</entry>
+    <entry key="basepackage">cn.thinkjoy.qfd</entry>
     <entry key="persistence">dao</entry>
 
     <!-- jsp namespace: web/${namespace}/${className}/list.jsp -->
     <entry key="namespace">pages</entry>
 
-    <!--  windows系统 路径为“\\” 双反斜杠 start  -->
-    <entry key="startupDir">F:\\env\\demo\\managerui-biz-startup</entry>
+    <entry key="startupDir">/Users/wdong/workspace-test/qfd</entry>
 
     <entry key="outRoot">${user.dir}/generator-output</entry>
-    <!--  windows系统 路径为“\\” 双反斜杠 end  -->
 
     <!-- 需要移除的表名前缀,使用逗号进行分隔多个前缀,示例值: t_,v_ -->
     <entry key="tableRemovePrefixes"></entry>
 
-    <!-- oracle需要指定jdbc.schema,并且可能要大写，其它数据库忽略此项配置  -->
+    <!-- oracle需要指定jdbc.schema,并且可能要大写，其它数据库忽略此项配置 -->
     <entry key="jdbc.schema"></entry>
     <entry key="jdbc.catalog"></entry>
 
-    <!-- 数据库类型至java类型映射  -->
+    <!-- 数据库类型至java类型映射 -->
     <entry key="java_typemapping.java.sql.Timestamp">java.util.Date</entry>
     <entry key="java_typemapping.java.sql.Date">java.util.Date</entry>
     <entry key="java_typemapping.java.sql.Time">java.util.Date</entry>
@@ -37,17 +35,23 @@
     <entry key="java_typemapping.java.sql.Clob">java.lang.String</entry>
 
     <!-- Mysql -->
-    <entry key="jdbc.databasename">cmc1</entry>
-    <entry key="table.pre">cmc1</entry>
-    <entry key="jdbc.url">jdbc:mysql://localhost:3306/cmc1?useUnicode=true&amp;characterEncoding=UTF-8</entry>
+    <!--<entry key="table.pre">qfd</entry>-->
+    <!--<entry key="jdbc.databasename">ucenter-test</entry>-->
+    <!--<entry key="jdbc.url">jdbc:mysql://ops.thinkjoy.cn:33061/ucenter-test?useUnicode=true&amp;characterEncoding=UTF-8</entry>-->
+    <!--<entry key="jdbc.driver">com.mysql.jdbc.Driver</entry>-->
+    <!--<entry key="jdbc.username">qyang</entry>-->
+    <!--<entry key="jdbc.password">Qyang@2015</entry>-->
+    <entry key="table.pre">qfd</entry>
+    <entry key="jdbc.databasename">qfd</entry>
+    <entry key="jdbc.url">jdbc:mysql://10.253.8.192:3306/qfd?useUnicode=true&amp;characterEncoding=UTF-8</entry>
     <entry key="jdbc.driver">com.mysql.jdbc.Driver</entry>
-    <entry key="jdbc.username">root</entry>
-    <entry key="jdbc.password">root</entry>
+    <entry key="jdbc.username">admin</entry>
+    <entry key="jdbc.password">AdcTest#2017</entry>
 
-    <!-- Oracle		jdbc:oracle:oci:@tnsname_devdb
-    <entry key="jdbc.url">jdbc:oracle:thin:@192.168.0.177:1521:[sid]</entry>
-    <entry key="jdbc.driver">oracle.jdbc.driver.OracleDriver</entry>
-    -->
+    <!-- Oracle jdbc:oracle:oci:@tnsname_devdb
+  <entry key="jdbc.url">jdbc:oracle:thin:@192.168.0.177:1521:[sid]</entry>
+  <entry key="jdbc.driver">oracle.jdbc.driver.OracleDriver</entry>
+  -->
 
     <!-- SQLServer2000
     <entry key="jdbc.url">jdbc:microsoft:sqlserver://localhost:1433;DatabaseName=[database]</entry>
@@ -67,12 +71,12 @@
     <!-- PostgreSql
     <entry key="jdbc.url">jdbc:postgresql://localhost/[database]</entry>
     <entry key="jdbc.driver">org.postgresql.Driver</entry>
-     -->
+    -->
 
     <!-- Sybase
     <entry key="jdbc.url">jdbc:sybase:Tds:localhost:5007/[database]</entry>
     <entry key="jdbc.driver">com.sybase.jdbc.SybDriver</entry>
-     -->
+    -->
 
     <!-- DB2
     <entry key="jdbc.url">jdbc:db2://localhost:5000/[database]</entry>
