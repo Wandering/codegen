@@ -341,8 +341,12 @@ public class GeneratorMain {
 			//copy-admin-resource
 			copyDirectiory(outRoot+"/admin/resources",admin_projectPath+"/src/main/resources");
 			copyDirectiory(outRoot+"/service/resources",service_projectPath+"/src/main/resources");
-			copyDirectiory(outRoot.substring(0,outRoot.lastIndexOf("/"))+"/common/webapp",admin_projectPath+"/src/main/webapp");
+			if(System.getProperty("os.name").startsWith("Windows")) {
+				copyDirectiory(outRoot.substring(0,outRoot.lastIndexOf("\\"))+"/common/webapp",admin_projectPath+"/src/main/webapp");
 
+			}else {
+				copyDirectiory(outRoot.substring(0, outRoot.lastIndexOf("/")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
+			}
 
 
 			String initSqldir = outRoot + "/" + module + "-initdatasql";
