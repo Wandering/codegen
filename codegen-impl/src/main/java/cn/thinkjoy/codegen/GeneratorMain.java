@@ -348,7 +348,7 @@ public class GeneratorMain {
 
 			String initSqldir = outRoot + "/" + module + "-initdatasql";
 			List<String> list = gg.insertResuorce(initSqldir);
-			gg.insertSql(list);
+			gg.insertSql(list,module);
 
 		}
 
@@ -443,18 +443,18 @@ public class GeneratorMain {
 	}
 
 
-	private void insertSql(List<String> sqlList)
+	private void insertSql(List<String> sqlList,String model)
 	{
-		String role = "insert into test_role (id, `name` ,  `description` ,`status`," +
+		String role = "insert into "+model+"_role (id, `name` ,  `description` ,`status`," +
 				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` ) values(1,'超级管理员','超级管理员',0,0,0,0,0)";
-		String roleUser = "insert into test_role_user(`status` ,`userId`,`roleId` ," +
+		String roleUser = "insert into "+model+"_role_user(`status` ,`userId`,`roleId` ," +
 				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`)values(0,1,1,0,0,0,0)";
-		String menu = "insert into test_role_resource ( `status`, `resourceId` , `resourceActionId`, `roleId`," +
+		String menu = "insert into "+model+"_role_resource ( `status`, `resourceId` , `resourceActionId`, `roleId`," +
 				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`  )" +
-				"select 0,id,0,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from test_resource";
-		String menuAction = "insert into test_role_resource (`status`,`resourceId` ,`resourceActionId`,`roleId`," +
+				"select 0,id,0,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from "+model+"_resource";
+		String menuAction = "insert into "+model+"_role_resource (`status`,`resourceId` ,`resourceActionId`,`roleId`," +
 				"`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`  )" +
-				"select 0,resourceId,id,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from test_resource_action";
+				"select 0,resourceId,id,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from "+model+"_resource_action";
 		sqlList.add(role);
 		sqlList.add(roleUser);
 		sqlList.add(menu);
