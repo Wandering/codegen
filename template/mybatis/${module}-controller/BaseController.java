@@ -10,7 +10,7 @@ package ${basepackage}.controller;
 import cn.thinkjoy.common.managerui.controller.AbstractAdminController;
 import cn.thinkjoy.common.managerui.domain.Resource;
 import cn.thinkjoy.common.managerui.domain.ResourceGrid;
-import cn.thinkjoy.test.common.MenuUtils;
+import ${basepackage}.common.MenuUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
