@@ -91,7 +91,6 @@ public class GeneratorMain {
 		{
 			isFirstCreate = false;
 		}
-		isFirstCreate = false;
 		if(isFirstCreate) {
 			//yq add 进行对应的文件拷贝
 
