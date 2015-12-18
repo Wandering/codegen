@@ -557,7 +557,14 @@
             style_edit_form(form);
         }
 
+        function setDefultValue(cellvalue, options, cell) {
+            if (cellvalue) {
+                return cellvalue;
+            } else {
+                return "";
+            }
 
+        }
 
         //it causes some flicker when reloading or navigating grid
         //it may be possible to have some custom formatter to do this as the grid is being created to prevent this

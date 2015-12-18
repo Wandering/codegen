@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import cn.thinkjoy.common.managerui.controller.AbstractAdminController;
+import ${basepackage}.controller.BaseController;
 
 @Controller
 @RequestMapping(value="/admin/${module}")
-public class ${className}Controller extends AbstractAdminController<I${className}Service>{
+public class ${className}Controller extends BaseController<I${className}Service>{
 
 
     @Autowired

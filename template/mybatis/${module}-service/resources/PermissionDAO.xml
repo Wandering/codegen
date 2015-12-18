@@ -11,7 +11,7 @@
         ${module}_resource res left outer join ${module}_role_resource rres on res.id = rres.resourceId
         left outer join ${module}_role_user ru on rres.roleId = ru.roleId
         where ru.userId = <@mapperEl 'userId'/>
-        order by res.longNumber
+        order by res.orderNum
     </select>
 
     <!-- 获取用户对应菜单的按钮权限 -->

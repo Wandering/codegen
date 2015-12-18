@@ -109,6 +109,10 @@ public class GeneratorMain {
 					if (file.isFile()) {
 						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
 					}
+					else if(file.getName().equals("dto")) {
+
+						copyDirectiory(file.getAbsolutePath(),parentDirStr+"/"+file.getName());
+					}
 				}
 
 
@@ -190,6 +194,8 @@ public class GeneratorMain {
 				for (File file : sourceDir.listFiles()) {
 					Files.copy(file, new File(parentDirStr + "/" + file.getName()));
 				}
+
+
 			}
 
 
