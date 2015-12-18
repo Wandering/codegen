@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * 
@@ -24,6 +27,7 @@ import java.util.List;
 public class GeneratorMain {
 	public static final boolean isStandard = true;
 
+	private static final Logger logger = LoggerFactory.getLogger(GeneratorMain.class);
 
 
 
@@ -68,21 +72,29 @@ public class GeneratorMain {
 		}
 
 
-		if(isFirstCreate) {
-			//yq add 进行对应的文件拷贝
-			String startupDir = GeneratorProperties.getRequiredProperty("startupDir");
+		String startupDir = GeneratorProperties.getRequiredProperty("startupDir");
 //			String autoGenProject = startupDir + "-autogen";///managerui-biz-startup";
-			String autoGenProject = startupDir ;///managerui-biz-startup";
-			String basePackage = GeneratorProperties.getRequiredProperty("basepackage");
+		String autoGenProject = startupDir ;///managerui-biz-startup";
+		String basePackage = GeneratorProperties.getRequiredProperty("basepackage");
 //			String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
 //			String module = GeneratorProperties.getRequiredProperty("module");
-			String basePackageDir = basePackage.replace(".", "/");
+		String basePackageDir = basePackage.replace(".", "/");
 
-			String domain_projectPath = autoGenProject+"/"+ module + "-domain";
-			String service_projectPath = autoGenProject+"/"+ module + "-service";
-			String admin_projectPath = autoGenProject+"/"+ module + "-admin-war";
-			String api_projectPath = autoGenProject+"/"+ module + "-api";
-			String web_projectPath = autoGenProject+"/"+ module + "-web-war";
+		String domain_projectPath = autoGenProject+"/"+ module + "-domain";
+		String service_projectPath = autoGenProject+"/"+ module + "-service";
+		String admin_projectPath = autoGenProject+"/"+ module + "-admin-war";
+		String api_projectPath = autoGenProject+"/"+ module + "-api";
+		String web_projectPath = autoGenProject+"/"+ module + "-web-war";
+		String isfirtstFlag = domain_projectPath + "/src/main/java/" + basePackageDir + "/domain";
+		File f = new File(isfirtstFlag);
+		if(f.exists())
+		{
+			isFirstCreate = false;
+		}
+		isFirstCreate = false;
+		if(isFirstCreate) {
+			//yq add 进行对应的文件拷贝
+
 //			String initSqldir = outRoot+"/" + module + "-initdatasql";
 			//domain拷贝
 			//autosetup工程位置
@@ -341,13 +353,18 @@ public class GeneratorMain {
 			//copy-admin-resource
 			copyDirectiory(outRoot+"/admin/resources",admin_projectPath+"/src/main/resources");
 			copyDirectiory(outRoot+"/service/resources",service_projectPath+"/src/main/resources");
-			if(System.getProperty("os.name").startsWith("Windows")) {
-				copyDirectiory(outRoot.substring(0,outRoot.lastIndexOf("\\"))+"/common/webapp",admin_projectPath+"/src/main/webapp");
+			try {
+				if (System.getProperty("os.name").startsWith("Windows")) {
+					copyDirectiory(outRoot.substring(0, outRoot.lastIndexOf("\\")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
 
-			}else {
-				copyDirectiory(outRoot.substring(0, outRoot.lastIndexOf("/")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
+				} else {
+					copyDirectiory(outRoot.substring(0, outRoot.lastIndexOf("/")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
+				}
+			}catch (Exception ex)
+			{
+				ex.printStackTrace();
+				logger.error("请检查你的配置文件outRoot,请配置你的outRoot到codegen目录/generator-output");
 			}
-
 
 			String initSqldir = outRoot + "/" + module + "-initdatasql";
 			List<String> list = insertResuorce(initSqldir);
