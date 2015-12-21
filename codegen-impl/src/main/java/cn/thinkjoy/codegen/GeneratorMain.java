@@ -11,7 +11,6 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -72,9 +71,9 @@ public class GeneratorMain {
 		}
 
 
-		String startupDir = GeneratorProperties.getRequiredProperty("startupDir");
+		String projectDir = GeneratorProperties.getRequiredProperty("projectDir");
 //			String autoGenProject = startupDir + "-autogen";///managerui-biz-startup";
-		String autoGenProject = startupDir ;///managerui-biz-startup";
+		String autoGenProject = projectDir ;///managerui-biz-startup";
 		String basePackage = GeneratorProperties.getRequiredProperty("basepackage");
 //			String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
 //			String module = GeneratorProperties.getRequiredProperty("module");
@@ -351,7 +350,7 @@ public class GeneratorMain {
 			copyBuildGradle(outRoot,"service",service_projectPath);
 			copyBuildGradle(outRoot,"web",web_projectPath);
 			//项目build.gradle
-			copyBuildGradle(outRoot,"project",startupDir);
+			copyBuildGradle(outRoot,"project",projectDir);
 			//copy-test
 			copyDirectiory(outRoot+"/test",admin_projectPath+"/src/test");
 			copyDirectiory(outRoot+"/test",web_projectPath+"/src/test");

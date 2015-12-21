@@ -176,34 +176,6 @@ public class GeneratorFacade {
     	}
 
 		public void processByAllTable(String templateRootDir,boolean isDelete) throws Exception {
-			//yq add 先拷贝managerui-biz-startup 到将来的生成目录
-			if(GeneratorMain.isStandard) {
-				String startupDir = GeneratorProperties.getRequiredProperty("startupDir");
-				String autoGenProject = startupDir + "-autogen";
-				File autoGenDir = new File(autoGenProject);
-				if (autoGenDir.exists()) {
-					//autoGenDir.delete();
-					if(System.getProperty("os.name").startsWith("Windows")){
-						String []cmdarray = new String[3];
-						cmdarray[0] = "cmd";
-						cmdarray[1] = "/c";
-						cmdarray[2] = "del "+autoGenProject;
-						Runtime.getRuntime().exec(cmdarray);
-						//Runtime.getRuntime().exec("rmdir /S /Q " + autoGenProject);
-					}else{
-						Runtime.getRuntime().exec("rm -rf " + autoGenProject);
-					}
-
-				}
-				
-				if(System.getProperty("os.name").startsWith("Windows")){
-//					Runtime.getRuntime().exec("xcopy /P " + startupDir + " " + autoGenProject);
-					Runtime.getRuntime().exec("xcopy /E/I " + startupDir + " " + autoGenProject);
-				}else{
-					Runtime.getRuntime().exec("cp -r " + startupDir + " " + autoGenProject);
-				}
-			}
-
  			List<Table> tables = TableFactory.getInstance().getAllTables();
 
             //yq add
