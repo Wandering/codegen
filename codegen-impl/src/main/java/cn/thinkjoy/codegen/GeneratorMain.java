@@ -391,7 +391,7 @@ public class GeneratorMain {
 		if(sourceDir.listFiles()!=null) {
 			for (File file : sourceDir.listFiles()) {
 				if (!file.isDirectory()) {
-					if(file.getName().endsWith(".gradle")) {
+					//if(file.getName().endsWith(".gradle")) {
 						//if(!"biz_role.ftl".equals(file.getName()) || !"UserController".equals(file.getName())) {
 						try {
 							Files.copy(file, new File(destDir + "/" + file.getName()));
@@ -399,7 +399,7 @@ public class GeneratorMain {
 							e.printStackTrace();
 						}
 						//}
-					}
+					//}
 				}
 			}
 		}
