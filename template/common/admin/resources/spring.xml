@@ -44,7 +44,7 @@
         <property name="redirectUrlAfterLogout" value="<@jspEl 'redirectUrlAfterLogout'/>"/>
         <property name="serverUri" value="<@jspEl 'serverUri'/>"/>
         <property name="secret" value="<@jspEl 'secret'/>"/>
-        <property name="exclusions" value="/admin/xxx/*"/>
+        <property name="exclusions" value="<@jspEl 'exclusions'/>"/>
         <property name="product" value="<@jspEl 'product'/>"/>
         <property name="appKey" value="<@jspEl 'appKey'/>"/>
     </bean>
