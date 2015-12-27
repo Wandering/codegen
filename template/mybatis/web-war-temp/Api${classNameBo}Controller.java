@@ -35,8 +35,8 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value="/api")
-public class api${className}Controller{
-    private static final Logger logger = LoggerFactory.getLogger(api${className}Controller.class);
+public class Api${className}Controller{
+    private static final Logger logger = LoggerFactory.getLogger(Api${className}Controller.class);
 
     @Autowired
     private I${className}Service ${classNameLower}Service;

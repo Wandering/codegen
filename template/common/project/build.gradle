@@ -24,9 +24,9 @@ buildscript {
     }
 }
 
-tasks.withType(Compile) {
-    options.encoding = "UTF-8"
-}
+//tasks.withType(Compile) {
+//    options.encoding = "UTF-8"
+//}
 
 
 project.configurations.all {
