@@ -337,11 +337,66 @@ public class GeneratorMain {
 			parentDir.mkdirs();
 
 			/*****
-			 * 复制api
+			 * 复制web-war
 			 */
-			parentDirStr = web_projectPath + "/src/main/java/" + basePackageDir + "/web-war";
+			String tempParentDirStr = web_projectPath + "/src/main/java/" + basePackageDir;
+			parentDirStr = tempParentDirStr + "/controller";
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
+			//复制controller
+			copyDirectiory(outRoot + "/" + module + "-web-controller",parentDirStr);
+
+			//拷贝resources
+			parentDirStr = web_projectPath + "/src/main/resources";
+			parentDir = new File(parentDirStr);
+			parentDir.mkdirs();
+
+			sourceDir = new File(outRoot + "/web/resources");
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+					}
+				}
+			}
+
+
+            //复制 common
+			parentDirStr = tempParentDirStr + "/common";
+			parentDir = new File(parentDirStr);
+			parentDir.mkdirs();
+
+			sourceDir = new File(outRoot + "/" + module + "-common");
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						//不拷贝  ServiceMaps.java
+						if(!"ServiceMaps.java".equals(file.getName())) {
+							Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+						}
+					}
+				}
+			}
+
+			//复制 filter
+			parentDirStr = tempParentDirStr + "/filter";
+			parentDir = new File(parentDirStr);
+			parentDir.mkdirs();
+
+			sourceDir = new File(outRoot + "/" + module + "-filter");
+			if(sourceDir.listFiles()!=null) {
+				for (File file : sourceDir.listFiles()) {
+					if (!file.isDirectory()) {
+						//不拷贝  ServiceMaps.java
+						if(!"ServiceMaps.java".equals(file.getName())) {
+							Files.copy(file, new File(parentDirStr + "/" + file.getName()));
+						}
+					}
+				}
+			}
+
+			//web-war 增加WEB-INF  web_projectPath + "/src/main/java/"
+			copyDirectiory(outRoot + "/webwar-config", web_projectPath + "/src/main/webapp");
 
 			//复制build.gradle
 			copyBuildGradle(outRoot,"domain",domain_projectPath);
@@ -370,6 +425,8 @@ public class GeneratorMain {
 				logger.error("请检查你的配置文件outRoot,请配置你的outRoot到codegen目录/generator-output");
 			}
 
+
+
 			String initSqldir = outRoot + "/" + module + "-initdatasql";
 			List<String> list = insertResuorce(initSqldir);
 			insertSql(list, module);
@@ -391,13 +448,15 @@ public class GeneratorMain {
 		if(sourceDir.listFiles()!=null) {
 			for (File file : sourceDir.listFiles()) {
 				if (!file.isDirectory()) {
-					if(file.getName().endsWith(".gradle")||file.getName().endsWith(".properites")) {
+					//if(file.getName().endsWith(".gradle")) {
+						//if(!"biz_role.ftl".equals(file.getName()) || !"UserController".equals(file.getName())) {
 						try {
 							Files.copy(file, new File(destDir + "/" + file.getName()));
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-					}
+						//}
+					//}
 				}
 			}
 		}

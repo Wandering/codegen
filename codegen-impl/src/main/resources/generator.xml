@@ -7,14 +7,14 @@
         2.可以引用环境变量: ${env.JAVA_HOME} or System.properties: ${user.home},property之间也可以相互引用
     </comment>
 
-    <entry key="module">qfd</entry>
-    <entry key="basepackage">cn.thinkjoy.qfd</entry>
+    <entry key="module">demo</entry>
+    <entry key="basepackage">cn.thinkjoy.${module}</entry>
     <entry key="persistence">dao</entry>
 
     <!-- jsp namespace: web/${namespace}/${className}/list.jsp -->
     <entry key="namespace">pages</entry>
 
-    <entry key="projectDir">/Users/wdong/workspace-test/qfd</entry>
+    <entry key="projectDir">${user.dir}/run/${module}</entry>
 
     <entry key="outRoot">${user.dir}/generator-output</entry>
 
@@ -35,12 +35,12 @@
     <entry key="java_typemapping.java.sql.Clob">java.lang.String</entry>
 
     <!-- Mysql -->
-    <entry key="table.pre">qfd</entry>
-    <entry key="jdbc.databasename">qfd</entry>
-    <entry key="jdbc.url">jdbc:mysql://10.253.8.192:3306/qfd?useUnicode=true&amp;characterEncoding=UTF-8</entry>
+    <entry key="table.pre">${module}</entry>
+    <entry key="jdbc.databasename">${module}</entry>
+    <entry key="jdbc.url">jdbc:mysql://localhost:3306/${module}?useUnicode=true&amp;characterEncoding=UTF-8</entry>
     <entry key="jdbc.driver">com.mysql.jdbc.Driver</entry>
-    <entry key="jdbc.username">admin</entry>
-    <entry key="jdbc.password">AdcTest#2017</entry>
+    <entry key="jdbc.username">root</entry>
+    <entry key="jdbc.password">root</entry>
 
     <!-- Oracle jdbc:oracle:oci:@tnsname_devdb
   <entry key="jdbc.url">jdbc:oracle:thin:@192.168.0.177:1521:[sid]</entry>
