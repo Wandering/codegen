@@ -7,6 +7,10 @@ dependencies {
 
     compile project(':${module}-service')
 
+
+    compile group:"cn.thinkjoy.ucenter",name:"ucenter-client",version:"$ucenterVersion", changing: true
+
+
     testCompile 'org.eclipse.jetty.aggregate:jetty-webapp:8.1.9.v20130131'
     testCompile 'org.eclipse.jetty:jetty-jsp:8.1.9.v20130131'
 }

@@ -13,6 +13,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.jdbc.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,10 +46,12 @@ public class GeneratorMain {
 		return  "mysql";
 	}
 
+
 	/**
 	 * 请直接修改以下代码调用不同的方法以执行相关生成任务.
 	 */
 	public static void main(String[] args) throws Exception {
+
 		String dbType = "mysql";
 		String url = GeneratorProperties.getRequiredProperty("jdbc.url");
 		dbType = getDbType(url);
@@ -56,6 +59,11 @@ public class GeneratorMain {
 		boolean isFirstCreate = true;
 		String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
 		String module = GeneratorProperties.getRequiredProperty("module");
+		String gradle_version = GeneratorProperties.getRequiredProperty("gradle_version");
+		if(StringUtils.isNullOrEmpty(gradle_version))
+		{
+			gradle_version = "2";
+		}
 
 		g.deleteOutRootDir();            //删除生成器的输出目录g
 		if (JdbcConstants.ORACLE.equals(dbType)) {
@@ -72,11 +80,8 @@ public class GeneratorMain {
 
 
 		String projectDir = GeneratorProperties.getRequiredProperty("projectDir");
-//			String autoGenProject = startupDir + "-autogen";///managerui-biz-startup";
 		String autoGenProject = projectDir ;///managerui-biz-startup";
 		String basePackage = GeneratorProperties.getRequiredProperty("basepackage");
-//			String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
-//			String module = GeneratorProperties.getRequiredProperty("module");
 		String basePackageDir = basePackage.replace(".", "/");
 
 		String domain_projectPath = autoGenProject+"/"+ module + "-domain";
@@ -351,14 +356,8 @@ public class GeneratorMain {
 			parentDir = new File(parentDirStr);
 			parentDir.mkdirs();
 
-			sourceDir = new File(outRoot + "/web/resources");
-			if(sourceDir.listFiles()!=null) {
-				for (File file : sourceDir.listFiles()) {
-					if (!file.isDirectory()) {
-						Files.copy(file, new File(parentDirStr + "/" + file.getName()));
-					}
-				}
-			}
+			copyDirectiory(outRoot+"/web/resources",parentDirStr);
+
 
 
             //复制 common
@@ -405,7 +404,8 @@ public class GeneratorMain {
 			copyBuildGradle(outRoot,"service",service_projectPath);
 			copyBuildGradle(outRoot,"web",web_projectPath);
 			//项目build.gradle
-			copyBuildGradle(outRoot,"project",projectDir);
+			copyBuildGradleProjectGradle(outRoot, "project", projectDir, gradle_version);
+
 			//copy-test
 			copyDirectiory(outRoot+"/test",admin_projectPath+"/src/test");
 			copyDirectiory(outRoot+"/test",web_projectPath+"/src/test");
@@ -448,7 +448,7 @@ public class GeneratorMain {
 		if(sourceDir.listFiles()!=null) {
 			for (File file : sourceDir.listFiles()) {
 				if (!file.isDirectory()) {
-					//if(file.getName().endsWith(".gradle")) {
+					if(file.getName().endsWith(".gradle")||file.getName().endsWith("properties")) {
 						//if(!"biz_role.ftl".equals(file.getName()) || !"UserController".equals(file.getName())) {
 						try {
 							Files.copy(file, new File(destDir + "/" + file.getName()));
@@ -456,11 +456,46 @@ public class GeneratorMain {
 							e.printStackTrace();
 						}
 						//}
-					//}
+					}
 				}
 			}
 		}
 	}
+
+
+	private static void copyBuildGradleProjectGradle(String outRoot,String name,
+													 String destDir,String gradleVersion)  {
+		File sourceDir = new File(outRoot + "/" + name);
+		String version = "v"+gradleVersion;
+		if(sourceDir.listFiles()!=null) {
+			for (File file : sourceDir.listFiles()) {
+				if (!file.isDirectory()) {
+					String fileName = file.getName();
+
+					if(fileName.indexOf("v")!=-1)
+					{
+						if(fileName.indexOf(version)==-1)
+						{
+							continue;
+						}
+						else
+						{
+							fileName = fileName.replace(version,"");
+						}
+					}
+					//if(!"biz_role.ftl".equals(file.getName()) || !"UserController".equals(file.getName())) {
+					try {
+						Files.copy(file, new File(destDir + "/" + fileName));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					//}
+
+				}
+			}
+		}
+	}
+
 
 	private static void copyDirectiory(String sourceDir,String targetDir) throws IOException{
 

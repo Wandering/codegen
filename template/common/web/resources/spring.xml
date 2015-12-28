@@ -27,6 +27,46 @@
             </props>
         </property>
     </bean>
-    <import resource="classpath:spring-ucenter-client.xml"/>
+
+
+
+    <!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
+    <context:annotation-config/>
+    <context:component-scan base-package="com.qtone.open"/>
+
+    <bean id="QTOAuthConfig" class="com.qtone.open.QTOpenApiConfig">
+        <property name="debugKey" value="<@jspEl 'debugKey'/>"/>
+        <property name="client_id" value="<@jspEl 'client_id'/>"/>
+        <property name="client_secret" value="<@jspEl 'client_secret'/>"/>
+        <property name="loginUrl" value="<@jspEl 'loginUrl'/>"/>
+        <property name="validateTokenUrl" value="<@jspEl 'validateTokenUrl'/>"/>
+        <property name="logoutPattern" value="<@jspEl 'logoutPattern'/>"/>
+        <property name="redirectUrlAfterLogin" value="<@jspEl 'redirectUrlAfterLogin'/>"/>
+        <property name="redirectUrlAfterLogout" value="<@jspEl 'redirectUrlAfterLogout'/>"/>
+        <property name="serverUri" value="<@jspEl 'serverUri'/>"/>
+        <property name="secret" value="<@jspEl 'secret'/>"/>
+        <property name="exclusions" value="<@jspEl 'exclusions'/>"/>
+        <property name="product" value="<@jspEl 'product'/>"/>
+        <property name="appKey" value="<@jspEl 'appKey'/>"/>
+    </bean>
+
+    <bean id="iqtoAuthListener" class="cn.thinkjoy.${module}.filter.AuthListener"/>
+
+
+    <bean id="QTOAAuthenticator"
+          class="com.qtone.open.ucm.client.QTOAAuthenticator">
+        <property name="qtOpenApiConfig" ref="QTOAuthConfig"/>
+        <property name="iqtoAuthListener" ref="iqtoAuthListener"/>
+    </bean>
+
+
+    <bean id="delegatingSecurityFilter" class="com.qtone.open.ucm.client.QTOAuthFilter">
+        <property name="authenticator" ref="QTOAAuthenticator"/>
+    </bean>
+
+    <bean id="springSecurityFilterChain" class="com.qtone.open.ucm.client.QTOAuthFilter">
+        <property name="authenticator" ref="QTOAAuthenticator"/>
+    </bean>
+
 
 </beans>

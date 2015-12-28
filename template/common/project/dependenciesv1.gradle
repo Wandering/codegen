@@ -25,5 +25,5 @@ allprojects {
     dapApiVersion = "0.0.5-SNAPSHOT"
     cmcVersion = "0.1.7-SNAPSHOT"
     mbridgeApi = "0.0.4-SNAPSHOT"
-    ucenterVersion="0.0.54-SNAPSHOT"
+    ucenterVersion="0.0.71-SNAPSHOT"
 }
