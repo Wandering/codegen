@@ -59,11 +59,12 @@ public class GeneratorMain {
 		boolean isFirstCreate = true;
 		String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
 		String module = GeneratorProperties.getRequiredProperty("module");
-		String gradle_version = GeneratorProperties.getRequiredProperty("gradle_version");
-		if(StringUtils.isNullOrEmpty(gradle_version))
-		{
-			gradle_version = "2";
-		}
+		String gradle_version = "2";
+//		String gradle_version = GeneratorProperties.getRequiredProperty("gradle_version");
+//		if(StringUtils.isNullOrEmpty(gradle_version))
+//		{
+//			gradle_version = "2";
+//		}
 
 		g.deleteOutRootDir();            //删除生成器的输出目录g
 		if (JdbcConstants.ORACLE.equals(dbType)) {
@@ -612,6 +613,12 @@ public class GeneratorMain {
 				e.printStackTrace();
 			}
 		}
+	}
+
+
+	private void copyWebFrontProject()
+	{
+
 	}
 
 
