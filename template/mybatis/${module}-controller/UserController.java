@@ -5,16 +5,16 @@
  * $Id:  AdminController.java 2015-01-27 15:38:37 $
  */
 
-package cn.thinkjoy.cmc.controller;
+package cn.thinkjoy.${module}.controller;
 
 import cn.thinkjoy.cloudstack.context.CloudContextFactory;
 import cn.thinkjoy.cloudstack.dynconfig.DynConfigClientFactory;
 import cn.thinkjoy.cloudstack.dynconfig.IChangeListener;
 import cn.thinkjoy.cloudstack.dynconfig.domain.Configuration;
-import cn.thinkjoy.cmc.domain.dto.AssignDTO;
-import cn.thinkjoy.cmc.domain.dto.AssignDetailDTO;
-import cn.thinkjoy.cmc.domain.dto.RoleDTO;
-import cn.thinkjoy.cmc.domain.dto.UserDTO;
+import cn.thinkjoy.${module}.domain.dto.AssignDTO;
+import cn.thinkjoy.${module}.domain.dto.AssignDetailDTO;
+import cn.thinkjoy.${module}.domain.dto.RoleDTO;
+import cn.thinkjoy.${module}.domain.dto.UserDTO;
 import cn.thinkjoy.common.domain.UserDomain;
 import cn.thinkjoy.common.domain.view.BizData4Page;
 import cn.thinkjoy.common.managerui.controller.AbstractAdminController;

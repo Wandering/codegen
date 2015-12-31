@@ -1,4 +1,4 @@
-package ${basepackage}.domain.dto
+package ${basepackage}.domain.dto;
 
 
 /**

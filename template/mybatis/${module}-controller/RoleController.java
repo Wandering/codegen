@@ -5,7 +5,7 @@
  * $Id:  RoleController.java 2015-01-27 15:38:39 $
  */
 
-package cn.thinkjoy.mubs.controller;
+package cn.thinkjoy.${module}.controller;
 
 import cn.thinkjoy.common.domain.view.BizData4Page;
 import cn.thinkjoy.common.managerui.controller.AbstractAdminController;
@@ -17,9 +17,9 @@ import cn.thinkjoy.common.managerui.service.IResourceService;
 import cn.thinkjoy.common.managerui.service.IRoleResourceService;
 import cn.thinkjoy.common.managerui.service.IRoleService;
 import cn.thinkjoy.common.utils.UserContext;
-import cn.thinkjoy.dto.AssignDTO;
-import cn.thinkjoy.dto.AssignDetailDTO;
-import cn.thinkjoy.dto.ResourceDTO;
+import cn.thinkjoy.${module}.domain.dto.AssignDTO;
+import cn.thinkjoy.${module}.domain.dto.AssignDetailDTO;
+import cn.thinkjoy.${module}.domain.dto.ResourceDTO;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
