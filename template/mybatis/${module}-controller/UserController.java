@@ -46,6 +46,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import ${basepackage}.controller.BaseController;
+
 
 /**
  * 注意：具体的业务系统将##dap###替换成appName
@@ -54,7 +56,7 @@ import java.util.concurrent.Executors;
 
 @Controller
 @RequestMapping(value = "/admin/${module}")
-public class UserController extends AbstractAdminController {
+public class UserController extends BaseController {
     @Autowired
     private IRoleService iRoleService;
     @Autowired
@@ -125,20 +127,44 @@ public class UserController extends AbstractAdminController {
         TypeReference typeReference = new TypeReference<ResponseT<List<User>>>() {
         };
         ResponseT<List<User>> responseT = (ResponseT<List<User>>) JSON.parseObject(result, typeReference);
-        for (User user : responseT.getBizData()) {
+        List<User> users = responseT.getBizData();
+        String page = request.getParameter("page");
+        String rows = request.getParameter("rows");
+        int currentPage = 1;
+        int pageSize = 10;
+        if(!StringUtils.isEmpty(page))
+        {
+            currentPage = Integer.valueOf(page);
+        }
+
+        if(!StringUtils.isEmpty(rows))
+        {
+            pageSize = Integer.valueOf(rows);
+        }
+        int start = (currentPage-1)*pageSize;
+
+        int end = start+pageSize;
+        if(!(end<users.size()))
+        {
+            end = users.size();
+        }
+        int total = (users.size()-1)/pageSize+1;
+
+
+        for (int i=start;i<end; i++) {
             UserDTO userDTO = new UserDTO();
-            userDTO.setPassword(user.getPassword());
-            userDTO.setUsername(user.getName());
-            userDTO.setId(String.valueOf(user.getId()));
+            userDTO.setPassword(users.get(i).getPassword());
+            userDTO.setUsername(users.get(i).getName());
+            userDTO.setId(String.valueOf(users.get(i).getId()));
             assignUsers.add(userDTO);
 
         }
-        BizData4Page page = new BizData4Page();
-        page.setRecords(assignUsers.size());
-        page.setRows(assignUsers);
-        page.setTotal(1);
-
-        return page;
+        BizData4Page bizData4Page = new BizData4Page();
+        bizData4Page.setRecords(users.size());
+        bizData4Page.setRows(assignUsers);
+        bizData4Page.setTotal(total);
+        bizData4Page.setPage(currentPage);
+        return bizData4Page;
     }
 
 
