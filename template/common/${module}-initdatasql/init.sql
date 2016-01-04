@@ -58,3 +58,17 @@ VALUES('500','用户','${module}_user','用户', 0, 1, 0, 1, 10);
 
 INSERT INTO `${module}_resource`(`id`,`url`,`orderNum`,`parentId`,`number`,`longNumber`,`name`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`modelId`, `bizModelName`,`status`)
 VALUES('500','/admin/${bizSys}/user','500','1','n500','a1_n500','用户管理',0,${times},0,${times},null,'500', 'user',0);
+
+INSERT INTO `${module}_resource_action` (`resourceId`,`name`,`actionAlias`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`status`) VALUES
+('500', '', '', '新增', 'add', '0', '1451888820030', '0', '1451888820030', '新增', '0'),
+('500', '', '', '修改', 'edit', '0', '1451888820030', '0', '1451888820030', '修改', '0'),
+('500', '', '', '删除', 'del', '0', '1451888820030', '0', '1451888820030', '删除', '0'),
+('500', '', '', '导出数据', 'export', '0', '1451888820030', '0', '1451888820030', '导出数据', '0'),
+('500', '', '', '导入数据', 'import', '0', '1451888820030', '0', '1451888820030', '导入数据', '0'),
+('500', '', '', '分配角色', 'role_assign', '0', '1451888820030', '0', '1451888820030', '分配角色', '0'),
+
+
+ INSERT INTO `${module}_resource_grid` (`resId`,`displayName`,`colId`,`orderNum`,`width`,`editoptions`,`edittype`,`unformat`,`description`,`moduleName`, `creator`, `createDate`, `lastModifier`, `lastModDate`, `status`,`editable`)VALUES
+ ('500','用户id','id','1',200,'{}',null,'','用户id','user', 0, 1, 0, 1, 0,'false'),
+ ('500','用户名','username','1',200,'{}',null,'','用户名','user', 0, 1, 0, 1, 0,'true'),
+ ('500','密码（md5）','password','1',200,'{}',null,'','密码','user', 0, 1, 0, 1, 0,'true'),
