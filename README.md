@@ -27,6 +27,7 @@
         dev：http://uww-dev.thinkjoy.com.cn/v2/ucm
         pro：http://uww-pro.thinkjoy.com.cn/v2/ucm
         test：http://uww-test.thinkjoy.com.cn/v2/ucm
+  7、初次需要基础表。建表语句见：http://wiki.thinkjoy.cn/pages/viewpage.action?pageId=17389476
 
 
 
