@@ -32,5 +32,5 @@
 </a>
 </div>
 <!-- /.main-container -->
-<#include "/module/custome/user_biz_script.ftl">  </body>
+<#include "/module/custome/script/user_biz_script.ftl">  </body>
 </html>
