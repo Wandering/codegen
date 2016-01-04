@@ -10,8 +10,11 @@
 
 注意:
 1、用户管理均在ucenter统一维护，所以业务系统是不存在用户表的。如果业务需要可以自行扩展
-2、由于不存在用户表，所以生成代码的时候没有生成view下有关的文件，所以请用户参照其他页面自行配置
-3、在用户管理和角色管理有角色分配和资源分配两个功能，请再resource_action中配置actionAlias:resource_assign和role_assign
+2、由于不存在用户表，所以生成代码的时候没有生成view下有关的文件以及数据库相关数据，所以请用户参照其他页面自行配置
+3、在用户管理和角色管理有角色分配和资源分配两个功能，
+   请在resource_action中配置actionAlias:resource_assign和role_assign
+
+
 4、关于权限控制简单说明:
   1>.用户由于角色一一对应.即一个用户只有一个角色
   2>.角色与资源（resource）多对多的对应
@@ -28,6 +31,9 @@
         pro：http://uww-pro.thinkjoy.com.cn/v2/ucm
         test：http://uww-test.thinkjoy.com.cn/v2/ucm
   7、初次需要基础表。建表语句见：http://wiki.thinkjoy.cn/pages/viewpage.action?pageId=17389476
+
+
+
 
 
 

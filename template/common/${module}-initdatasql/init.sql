@@ -6,7 +6,6 @@ INSERT INTO `${module}_model`(`id`,`name`,`tblName`,`description`, `creator`, `c
 VALUES('${table.seq}','${table.name}','${table.sqlName}','${table.description}', 0, 1, 0, 1, 10);
 </#list>
 
-
 -- parent resource
 <#list parentRes?keys as key>
 <#assign prId = parentRes[key].seq>
@@ -50,3 +49,4 @@ VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${
   </#list>
 <#assign resourceId=resourceId+1/>
 </#list>
+

@@ -482,7 +482,7 @@ jQuery(function ($) {
                                     objId: currentGridId,
                                     resources: JSON.stringify(array)
                                 }, function (result) {
-                                    alert(result)
+                                    alert(result.bizData)
                                     $("#treeFixed-01").hide();
                                 }
                         );
@@ -578,6 +578,7 @@ jQuery(function ($) {
                                     objId: currentGridId,
                                     resources: JSON.stringify(array)
                                 }, function (result) {
+                                    alert(result.bizData)
                                     $("#treeFixed-01").hide();
                                 }
                         );
