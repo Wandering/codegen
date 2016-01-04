@@ -34,9 +34,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ${basepackage}.controller.BaseController;
+
 @Controller
 @RequestMapping(value = "/admin/${module}")
-public class RoleController extends AbstractAdminController<IRoleService> {
+public class RoleController extends BaseController<IRoleService> {
 
     @Autowired
     private IRoleService roleService;

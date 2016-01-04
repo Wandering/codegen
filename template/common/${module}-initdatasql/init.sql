@@ -6,6 +6,7 @@ INSERT INTO `${module}_model`(`id`,`name`,`tblName`,`description`, `creator`, `c
 VALUES('${table.seq}','${table.name}','${table.sqlName}','${table.description}', 0, 1, 0, 1, 10);
 </#list>
 
+
 -- parent resource
 <#list parentRes?keys as key>
 <#assign prId = parentRes[key].seq>
@@ -50,3 +51,10 @@ VALUES('${table.seq}','/admin/${bizSys}/${classNameAllLower}','${table.seq}','${
 <#assign resourceId=resourceId+1/>
 </#list>
 
+
+-- 用户管理
+INSERT INTO `${module}_model`(`id`,`name`,`tblName`,`description`, `creator`, `createDate`, `lastModifier`, `lastModDate`, `status`)
+VALUES('500','用户','${module}_user','用户', 0, 1, 0, 1, 10);
+
+INSERT INTO `${module}_resource`(`id`,`url`,`orderNum`,`parentId`,`number`,`longNumber`,`name`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`modelId`, `bizModelName`,`status`)
+VALUES('500','/admin/${bizSys}/user','500','1','n500','a1_n500','用户管理',0,${times},0,${times},null,'500', 'user',0);
