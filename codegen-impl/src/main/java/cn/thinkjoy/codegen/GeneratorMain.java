@@ -5,12 +5,14 @@ import cn.org.rapid_framework.generator.GeneratorProperties;
 import cn.org.rapid_framework.generator.provider.db.DataSourceProvider;
 import cn.org.rapid_framework.generator.util.JdbcConstants;
 import com.google.common.io.Files;
+import com.mysql.jdbc.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -540,8 +542,22 @@ public class GeneratorMain {
         }
     }
 
+    public static String  getRoleResourceId(String model)
+    {
+        String sql = "select id from " + model + "_resource where bizModelName='role' ";
+        return sql;
+
+    }
+
+    private static String createRoleResourceAction(String model,String resourceId)
+    {
+        String sql = "INSERT INTO `" + model + "_resource_action` (`resourceId`,`name`,`actionAlias`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`status`)" +
+                "      VALUES("+resourceId+",'分配资源','resource_assign',0,1451975928507,0,1451975928507,'分配资源',0)";
+        return sql;
+    }
 
     private static void insertSql(List<String> sqlList, String model) {
+        List<String> list_menu = new ArrayList<String>();
         String role = "insert into " + model + "_role (id, `name` ,  `description` ,`status`," +
                 "`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` ) values(1,'超级管理员','超级管理员',0,0,0,0,0)";
         String roleUser = "insert into " + model + "_role_user(`status` ,`userId`,`roleId` ," +
@@ -552,10 +568,10 @@ public class GeneratorMain {
         String menuAction = "insert into " + model + "_role_resource (`status`,`resourceId` ,`resourceActionId`,`roleId`," +
                 "`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`  )" +
                 "select 0,resourceId,id,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from " + model + "_resource_action";
-        sqlList.add(role);
-        sqlList.add(roleUser);
-        sqlList.add(menu);
-        sqlList.add(menuAction);
+        list_menu.add(role);
+        list_menu.add(roleUser);
+        list_menu.add(menu);
+        list_menu.add(menuAction);
 
         //按新的方式处理
         Connection conn = null;
@@ -569,6 +585,22 @@ public class GeneratorMain {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
             for (String sql : sqlList) {
+                System.out.println(sql);
+                stmt.addBatch(sql);
+                stmt.executeBatch();
+            }
+            ResultSet rs =  stmt.executeQuery(getRoleResourceId(model));
+            String id = "";
+            if(rs.next())
+            {
+                id = rs.getString(1);
+            }
+            if(!StringUtils.isNullOrEmpty(id))
+            {
+                stmt.addBatch(createRoleResourceAction(model,id));
+                stmt.executeBatch();
+            }
+            for (String sql : list_menu) {
                 System.out.println(sql);
                 stmt.addBatch(sql);
                 stmt.executeBatch();
