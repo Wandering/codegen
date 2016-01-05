@@ -30,6 +30,10 @@ selectMaxId
 updateOrSave
 selectOne
 selectList
+findByCriteria
+countByCriteria
+findOneByCriteria
+pagingByCriteria
 -->
 <#assign isSKey = false>
 <#if table.getPkColumn().sqlType==12>
@@ -289,15 +293,15 @@ selectList
         <if test="selector!=null">
             <trim prefixOverrides=",">
                 <#list table.columns as column>
-                <if test="selector.${column.columnNameFirstLower}!=null">
-                    , ${column.sqlName}
-                </if>
-            </#list>
-        </trim>
-    </if>
-<if test="selector==null">
-<include refid="Base_Column_List" />
-</if>
+                    <if test="selector.${column.columnNameFirstLower}!=null">
+                        , ${column.sqlName}
+                    </if>
+                </#list>
+            </trim>
+        </if>
+        <if test="selector==null">
+        <include refid="Base_Column_List" />
+        </if>
         FROM ${table.sqlName}
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <#list table.columns as column>
@@ -355,6 +359,106 @@ selectList
         SELECT
         MAX(id)
         FROM ${table.sqlName}
+    </select>
+
+    <select id="findByCriteria" parameterType="cn.thinkjoy.common.mybatis.core.mybatis.criteria.Criteria"
+            resultType="${className}" >
+        select
+        <choose>
+            <when test="selector!=null and selector.size() > 0">
+                <trim prefixOverrides=",">
+                    <#list table.columns as column>
+                        <if test="selector.${column.columnNameFirstLower}!=null">
+                            , ${column.sqlName}
+                        </if>
+                    </#list>
+                </trim>
+            </when>
+            <otherwise>
+                <include refid="Base_Column_List" />
+            </otherwise>
+        </choose>
+        from ${table.sqlName}
+        <if test="_parameter != null" >
+            <where >
+                <include refid="Global.Where_Clause" />
+            </where>
+        </if>
+        <if test="hasOrderBy" >
+            ORDER BY
+            <foreach collection="orderBys" item="orderBy" separator="," >
+                <@jspEl 'orderBy'/></foreach>
+        </if>
+    </select>
+
+    <select id="countByCriteria" parameterType="cn.thinkjoy.common.mybatis.core.mybatis.criteria.Criteria" resultType="java.lang.Integer" >
+        select count(1)
+        from ${table.sqlName}
+        <if test="_parameter != null" >
+            <where >
+                <include refid="Global.Where_Clause" />
+            </where>
+        </if>
+    </select>
+
+    <select id="findOneByCriteria" parameterType="cn.thinkjoy.common.mybatis.core.mybatis.criteria.Criteria" resultType="${className}" >
+        select
+        <choose>
+            <when test="selector!=null and selector.size() > 0">
+                <trim prefixOverrides=",">
+                    <#list table.columns as column>
+                        <if test="selector.${column.columnNameFirstLower}!=null">
+                            , ${column.sqlName}
+                        </if>
+                    </#list>
+                </trim>
+            </when>
+            <otherwise>
+                <include refid="Base_Column_List" />
+            </otherwise>
+        </choose>
+        from ${table.sqlName}
+        <if test="_parameter != null" >
+            <where >
+                <include refid="Global.Where_Clause" />
+            </where>
+        </if>
+        <if test="hasOrderBy" >
+            <foreach collection="orderBys" item="orderBy" separator="," >
+                <@jspEl 'orderBy'/></foreach>
+        </if>
+        limit 0,1
+    </select>
+
+    <select id="pagingByCriteria" parameterType="cn.thinkjoy.common.mybatis.core.mybatis.criteria.Criteria" resultType="${className}" >
+        select
+        <choose>
+            <when test="selector!=null and selector.size() > 0">
+                <trim prefixOverrides=",">
+                    <#list table.columns as column>
+                        <if test="selector.${column.columnNameFirstLower}!=null">
+                            , ${column.sqlName}
+                        </if>
+                    </#list>
+                </trim>
+            </when>
+            <otherwise>
+                <include refid="Base_Column_List" />
+            </otherwise>
+        </choose>
+        from ${table.sqlName}
+        <if test="_parameter != null" >
+            <where >
+                <include refid="Global.Where_Clause" />
+            </where>
+        </if>
+        <if test="hasOrderBy" >
+            <foreach collection="orderBys" item="orderBy" separator="," >
+                <@jspEl 'orderBy'/></foreach>
+        </if>
+        <if test="hasLimit" >
+            limit <@jspEl 'first - 1'/>,<@jspEl 'last - first'/>
+        </if>
     </select>
 
 </mapper>
