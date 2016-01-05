@@ -48,4 +48,24 @@ public class CommonController extends AbstractCommonController{
     protected void innerHandleDel(String mainObj, Map dataMap) {
         getServiceMaps().get(mainObj).delete(dataMap.get("id"));
     }
+
+    @Override
+    protected void innerHandleAdd(String mainObj, Map dataMap) {
+        Map<String, Object> newDataMap = (Map<String, Object>)dataMap;
+        Map<String, Object> realDataMap = new HashMap<String, Object>();
+        if(mainObj.equals("role"))
+        {
+            for (String key : newDataMap.keySet()) {
+
+                if(!StringUtils.isNullOrEmpty(newDataMap.get(key).toString())){
+                    realDataMap.put(key,newDataMap.get(key));
+                }
+            }
+            getServiceMaps().get(mainObj).insertMap(realDataMap);
+
+        }else
+        {
+            super.innerHandleAdd(mainObj, dataMap);
+        }
+    }
 }
