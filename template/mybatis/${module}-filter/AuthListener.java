@@ -15,6 +15,7 @@ public class AuthListener implements IQTOAuthListener {
         UserDomain<String> userDomain = new UserDomain<>();
         if(accountDto != null) {
             userDomain.setId(accountDto.getUid());
+            userDomain.setName(accountDto.getName());
             UserContext.setCurrentUser(userDomain);
         }
     }
