@@ -53,6 +53,7 @@
                 <value>application/json; charset=utf-8</value>
             </list>
         </property>
+        <property name="iTypeReference" ref="typeReferenceMaps"/>
     </bean>
     <bean id="typeReferenceMaps" class="cn.thinkjoy.${module}.common.TypeReferenceMaps" init-method="init"/>
 
