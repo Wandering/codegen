@@ -405,7 +405,7 @@ public class GeneratorMain {
             copyDirectiory(outRoot + "/service/resources", service_projectPath + "/src/main/resources");
             try {
                 if (System.getProperty("os.name").startsWith("Windows")) {
-                    copyDirectiory(outRoot.substring(0, outRoot.lastIndexOf("\\")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
+                    copyDirectiory(outRoot.substring(0, outRoot.replaceAll("/","\\").lastIndexOf("\\")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
 
                 } else {
                     copyDirectiory(outRoot.substring(0, outRoot.lastIndexOf("/")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
