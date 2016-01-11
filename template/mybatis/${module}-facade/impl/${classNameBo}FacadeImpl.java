@@ -10,13 +10,14 @@
 <#include "/macro.include"/>
 package ${basepackage}.facade.impl;
 
+import cn.thinkjoy.common.service.impl.AbstractPersistenceProvider;
 import ${basepackage}.facade.I${className}Facade;
 import ${basepackage}.service.I${className}Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("${className}FacadeImpl")
-public class ${className}FacadeImpl implements I${className}Facade {
+public class ${className}FacadeImpl extends AbstractPersistenceProvider implements I${className}Facade {
     @Autowired
     private I${className}Service ${classNameLower}Service;
 

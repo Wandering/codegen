@@ -88,7 +88,7 @@ public class GeneratorMain {
         if (f.exists()) {
             isFirstCreate = false;
         }
-        if (isFirstCreate) {
+        if (false) {//isFirstCreate
             //yq add 进行对应的文件拷贝
 
 //			String initSqldir = outRoot+"/" + module + "-initdatasql";
@@ -416,9 +416,9 @@ public class GeneratorMain {
             }
 
 
-            String initSqldir = outRoot + "/" + module + "-initdatasql";
-            List<String> list = insertResuorce(initSqldir);
-            insertSql(list, module);
+//            String initSqldir = outRoot + "/" + module + "-initdatasql";
+//            List<String> list = insertResuorce(initSqldir);
+//            insertSql(list, module);
 
         }
 

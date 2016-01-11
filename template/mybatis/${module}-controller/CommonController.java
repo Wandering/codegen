@@ -11,10 +11,12 @@
 package ${basepackage}.controller;
 
 
+import cn.thinkjoy.common.managerui.controller.helpers.BasePersistenceProviderMaps;
 import cn.thinkjoy.common.managerui.controller.helpers.BaseServiceMaps;
 import cn.thinkjoy.common.managerui.controller.AbstractCommonController;
 
 import cn.thinkjoy.common.service.IBaseService;
+import ${basepackage}.common.PersistenceProviderMaps;
 import ${basepackage}.common.ServiceMaps;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +31,17 @@ public class CommonController extends AbstractCommonController{
     @Autowired
     private ServiceMaps serviceMaps;
 
+    @Autowired
+    private PersistenceProviderMaps persistenceProviderMaps;
+
     @Override
     protected BaseServiceMaps getServiceMaps() {
         return serviceMaps;
+    }
+
+    @Override
+    protected BasePersistenceProviderMaps getPersistenceProviderMaps() {
+        return persistenceProviderMaps;
     }
 
     @Override
