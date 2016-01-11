@@ -19,10 +19,13 @@ import cn.thinkjoy.common.service.IBaseService;
 import ${basepackage}.common.PersistenceProviderMaps;
 import ${basepackage}.common.ServiceMaps;
 
+
+import com.mysql.jdbc.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -57,5 +60,25 @@ public class CommonController extends AbstractCommonController{
     @Override
     protected void innerHandleDel(String mainObj, Map dataMap) {
         getServiceMaps().get(mainObj).delete(dataMap.get("id"));
+    }
+
+    @Override
+    protected void innerHandleAdd(String mainObj, Map dataMap) {
+        Map<String, Object> newDataMap = (Map<String, Object>)dataMap;
+        Map<String, Object> realDataMap = new HashMap<String, Object>();
+        if(mainObj.equals("role"))
+        {
+            for (String key : newDataMap.keySet()) {
+
+                if(!StringUtils.isNullOrEmpty(newDataMap.get(key).toString())){
+                    realDataMap.put(key,newDataMap.get(key));
+                }
+            }
+            getServiceMaps().get(mainObj).insertMap(realDataMap);
+
+        }else
+        {
+            super.innerHandleAdd(mainObj, dataMap);
+        }
     }
 }

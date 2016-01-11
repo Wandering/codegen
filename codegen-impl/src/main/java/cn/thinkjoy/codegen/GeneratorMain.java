@@ -49,7 +49,13 @@ public class GeneratorMain {
         String url = GeneratorProperties.getRequiredProperty("jdbc.url");
         dbType = getDbType(url);
         GeneratorFacade g = new GeneratorFacade();
-        boolean isFirstCreate = true;
+        boolean isCreateProject = true;
+        try {
+            isCreateProject = GeneratorProperties.getRequiredProperty("isCreateProject").equals("true");
+        }catch (Exception ex)
+        {
+            logger.error("请配置是否创建工程");
+        }
         String outRoot = GeneratorProperties.getRequiredProperty("outRoot");
         String module = GeneratorProperties.getRequiredProperty("module");
         String gradle_version = "2";
@@ -85,10 +91,10 @@ public class GeneratorMain {
         String web_projectPath = autoGenProject + "/" + module + "-web-war";
         String isfirtstFlag = domain_projectPath + "/src/main/java/" + basePackageDir + "/domain";
         File f = new File(isfirtstFlag);
-        if (f.exists()) {
-            isFirstCreate = false;
+        if (f.exists() && isCreateProject) {
+            isCreateProject = false;
         }
-        if (false) {//isFirstCreate
+        if (isCreateProject) {
             //yq add 进行对应的文件拷贝
 
 //			String initSqldir = outRoot+"/" + module + "-initdatasql";
@@ -387,6 +393,7 @@ public class GeneratorMain {
 
             //web-war 增加WEB-INF  web_projectPath + "/src/main/java/"
             copyDirectiory(outRoot + "/webwar-config", web_projectPath + "/src/main/webapp");
+            copyDirectiory(outRoot + "/adminwar-config", admin_projectPath + "/src/main/webapp");
 
             //复制build.gradle
             copyBuildGradle(outRoot, "domain", domain_projectPath);
@@ -405,7 +412,7 @@ public class GeneratorMain {
             copyDirectiory(outRoot + "/service/resources", service_projectPath + "/src/main/resources");
             try {
                 if (System.getProperty("os.name").startsWith("Windows")) {
-                    copyDirectiory(outRoot.substring(0, outRoot.lastIndexOf("\\")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
+                    copyDirectiory(outRoot.substring(0, outRoot.replaceAll("/","\\").lastIndexOf("\\")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
 
                 } else {
                     copyDirectiory(outRoot.substring(0, outRoot.lastIndexOf("/")) + "/common/webapp", admin_projectPath + "/src/main/webapp");
@@ -416,9 +423,9 @@ public class GeneratorMain {
             }
 
 
-//            String initSqldir = outRoot + "/" + module + "-initdatasql";
-//            List<String> list = insertResuorce(initSqldir);
-//            insertSql(list, module);
+            String initSqldir = outRoot + "/" + module + "-initdatasql";
+            List<String> list = insertResuorce(initSqldir);
+            insertSql(list, module);
 
         }
 
