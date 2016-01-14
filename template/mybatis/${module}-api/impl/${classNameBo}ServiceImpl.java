@@ -10,8 +10,6 @@
 <#include "/macro.include"/>
 package ${basepackage}.service.impl;
 
-import cn.thinkjoy.common.domain.BaseDomain;
-import cn.thinkjoy.common.dao.IBaseDAO;
 import ${basepackage}.dao.I${className}DAO;
 import ${basepackage}.domain.${className};
 import ${basepackage}.service.I${className}Service;
@@ -24,12 +22,12 @@ import java.util.Map;
 
 
 @Service("${className}ServiceImpl")
-public class ${className}ServiceImpl extends AbstractPageService<IBaseDAO<${className}>, ${className}> implements I${className}Service<IBaseDAO<${className}>,${className}>{
+public class ${className}ServiceImpl extends AbstractPageService<I${className}DAO, ${className}> implements I${className}Service{
     @Autowired
     private I${className}DAO ${classNameLower}DAO;
 
     @Override
-    public IBaseDAO<${className}> getDao() {
+    public I${className}DAO getDao() {
         return ${classNameLower}DAO;
     }
 

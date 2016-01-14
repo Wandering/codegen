@@ -9,11 +9,11 @@
  */
 
 package ${basepackage}.service;
-import cn.thinkjoy.common.dao.IBaseDAO;
-import cn.thinkjoy.common.domain.BaseDomain;
 import cn.thinkjoy.common.service.IBaseService;
 import cn.thinkjoy.common.service.IPageService;
+import ${basepackage}.dao.I${className}DAO;
+import ${basepackage}.domain.${className};
 
-public interface I${className}Service<D extends IBaseDAO<T>, T extends BaseDomain> extends IBaseService<D, T>,IPageService<D, T>{
+public interface I${className}Service extends IBaseService<I${className}DAO, ${className}>,IPageService<I${className}DAO, ${className}>{
 
 }
