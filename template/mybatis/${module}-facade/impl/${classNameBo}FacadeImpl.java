@@ -10,6 +10,7 @@
 <#include "/macro.include"/>
 package ${basepackage}.facade.impl;
 
+import cn.thinkjoy.common.service.IBaseService;
 import cn.thinkjoy.common.service.impl.AbstractPersistenceProvider;
 import ${basepackage}.facade.I${className}Facade;
 import ${basepackage}.service.I${className}Service;
@@ -27,4 +28,9 @@ public class ${className}FacadeImpl extends AbstractPersistenceProvider implemen
 //    public void add() {
 //        ${classNameLower}Service.add();
 //    }
+
+    @Override
+    public IBaseService getService() {
+        return ${classNameLower}Service;
+    }
 }

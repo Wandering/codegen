@@ -25,7 +25,7 @@ configurations {
 /** 此闭包内的声明子类皆可使用 */
 allprojects {
     group = 'cn.thinjoy.codegen'
-    version = '0.0.1'
+    version = '0.0.2'
 
     apply plugin: 'java'
     apply plugin: 'idea'

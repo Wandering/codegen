@@ -10,6 +10,9 @@
  */
 <#include "/macro.include"/>
 package ${basepackage}.facade;
-public interface I${className}Facade {
+
+import cn.thinkjoy.common.service.IPersistenceProvider;
+
+public interface I${className}Facade extends IPersistenceProvider{
 
 }

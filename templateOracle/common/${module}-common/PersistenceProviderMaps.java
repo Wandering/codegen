@@ -22,11 +22,11 @@ import javax.annotation.PostConstruct;
 public class PersistenceProviderMaps extends BasePersistenceProviderMaps {
 
 //    @Autowired
-//    private ReportMailTemplateFacadeImpl reportMailTemplateFacadeImpl;
+//    private IReportMailTemplateFacade reportMailTemplateFacade;
 
     @PostConstruct
     public void init() {
-//        providerMap.put("reportmailtemplate".toLowerCase(), reportMailTemplateFacadeImpl);
+//        providerMap.put("reportmailtemplate".toLowerCase(), reportMailTemplateFacade);
     }
 
 }
