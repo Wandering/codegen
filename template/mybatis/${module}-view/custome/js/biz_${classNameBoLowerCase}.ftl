@@ -33,21 +33,15 @@
     }
     function searchLoad(){
         var url = "/admin/${r"${bizSys}/${mainObj}"}s";
-
         var rules = buildRules();
-
         var filters = {
             'groupOp': 'AND',
             "rules": rules
         };
-
-        $("#grid-table").jqGrid('setGridParam', {url:url,mtype:"POST",postData:"filters="+JSON.stringify(filters),page: 1}).trigger("reloadGrid");
-
-
+        $("#grid-table").jqGrid('setGridParam', {url:url,mtype:"POST",postData:"filters="+encodeURIComponent(JSON.stringify(filters)),page: 1}).trigger("reloadGrid");
     }
 
     $("#search").click(function () {
         searchLoad();
-
     });
 </script>
