@@ -5,6 +5,12 @@ dependencies {
 
     compile group: "cn.thinkjoy.common", name: "thinkjoy-web-common", version: "$thinkjoyCommonVersion", changing: true
 
+    compile (group: "cn.thinkjoy.common", name: "thinkjoy-mu-common", version: "$thinkjoyCommonVersion", changing: true)
+            {
+                exclude group:'com.google.guava'
+                exclude group:'com.easypoi'
+            }
+
     compile project(':${module}-service')
 
 
