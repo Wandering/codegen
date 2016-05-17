@@ -34,6 +34,8 @@ findByCriteria
 countByCriteria
 findOneByCriteria
 pagingByCriteria
+updateByCriteria
+deleteByCriteria
 -->
 <#assign isSKey = false>
 <#if table.getPkColumn().sqlType==12>
@@ -468,6 +470,31 @@ pagingByCriteria
             limit <@jspEl 'first - 1'/>,<@jspEl 'last - first'/>
         </if>
     </select>
+
+    <update id="updateByCriteria" parameterType="cn.thinkjoy.common.mybatis.core.mybatis.criteria.Criteria">
+        UPDATE ${table.sqlName}
+        <trim prefix="SET" suffixOverrides=",">
+            <#list table.notPkColumns as column>
+                <if test="entityMap.${column.columnNameFirstLower}!=null">
+                    ${column.sqlName} = <@mapperEl 'entityMap.' + column.columnNameFirstLower/>,
+                </if>
+            </#list>
+        </trim>
+        <if test="_parameter != null" >
+            <where >
+                <include refid="Global.Where_Clause" />
+            </where>
+        </if>
+    </update>
+
+    <delete id="deleteByCriteria" parameterType="cn.thinkjoy.common.mybatis.core.mybatis.criteria.Criteria">
+        DELETE FROM ${table.sqlName}
+        <if test="_parameter != null" >
+            <where >
+                <include refid="Global.Where_Clause" />
+            </where>
+        </if>
+    </delete>
 
 </mapper>
 
