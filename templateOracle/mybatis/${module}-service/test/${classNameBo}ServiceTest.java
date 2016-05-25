@@ -8,7 +8,7 @@
  * $Id:  ${className}Service.java ${now?string('yyyy-MM-dd HH:mm:ss')} $
  */
 
-package ${basepackage}.service;
+package ${basepackage}.service.impl;
 import cn.thinkjoy.common.dao.IBaseDAO;
 import cn.thinkjoy.common.domain.BaseDomain;
 import cn.thinkjoy.common.service.IBaseService;
