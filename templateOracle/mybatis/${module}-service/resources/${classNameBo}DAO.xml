@@ -335,9 +335,9 @@ selectList
         <#list table.columns as column>
         <if test="${column.columnNameFirstLower}!=null">
             <@jspEl 'groupOp'/> <@jspEl column.columnNameFirstLower+'.field'/> <@jspEl column.columnNameFirstLower+'.op'/>
-            <if test="condition.${column.columnNameFirstLower}.op!='in'"> <@mapperEl column.columnNameFirstLower+'.data'/> </if>
-            <if test="condition.${column.columnNameFirstLower}.op=='in'">
-                <foreach collection="condition.${column.columnNameFirstLower}.data" item="listItem" open="(" close=")" separator="," ><@mapperEl 'listItem'/></foreach>
+            <if test="${column.columnNameFirstLower}.op!='in'"> <@mapperEl column.columnNameFirstLower+'.data'/> </if>
+            <if test="${column.columnNameFirstLower}.op=='in'">
+                <foreach collection="${column.columnNameFirstLower}.data" item="listItem" open="(" close=")" separator="," ><@mapperEl 'listItem'/></foreach>
             </if>
         </if>
         </#list>
