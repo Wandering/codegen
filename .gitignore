@@ -84,3 +84,10 @@
 ###idea##
 #/.idea/
 #*.iml
+
+.idea
+*.iml
+bin
+build
+run
+generator-output
