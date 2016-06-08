@@ -11,6 +11,8 @@
     <entry key="basepackage">cn.thinkjoy.${module}</entry>
     <entry key="persistence">dao</entry>
 
+    <entry key="isCreateProject">true</entry>
+
     <!-- jsp namespace: web/${namespace}/${className}/list.jsp -->
     <entry key="namespace">pages</entry>
 
