@@ -90,6 +90,9 @@ public class GeneratorMain {
         String api_projectPath = autoGenProject + "/" + module + "-api";
         String web_projectPath = autoGenProject + "/" + module + "-web-war";
         String isfirtstFlag = domain_projectPath + "/src/main/java/" + basePackageDir + "/domain";
+
+        String isAdminInit = "false";//admin是否需要初始化数据库
+
         File f = new File(isfirtstFlag);
         if (f.exists() && isCreateProject) {
             isCreateProject = false;
@@ -422,10 +425,14 @@ public class GeneratorMain {
                 logger.error("请检查你的配置文件outRoot,请配置你的outRoot到codegen目录/generator-output");
             }
 
-
-            String initSqldir = outRoot + "/" + module + "-initdatasql";
-            List<String> list = insertResuorce(initSqldir);
-            insertSql(list, module);
+            /*****
+             * 插入admin初始数据
+             */
+            if(Boolean.TRUE.toString().equalsIgnoreCase(isAdminInit)){
+                String initSqldir = outRoot + "/" + module + "-initdatasql";
+                List<String> list = insertResuorce(initSqldir);
+                insertSql(list, module);
+            }
 
         }
 
@@ -549,32 +556,32 @@ public class GeneratorMain {
         }
     }
 
-    public static String  getRoleResourceId(String model)
+    public static String  getRoleResourceId(String tablePrefix)
     {
-        String sql = "select id from " + model + "_resource where bizModelName='role' ";
+        String sql = "select id from " + tablePrefix + "_resource where bizModelName='role' ";
         return sql;
 
     }
 
-    private static String createRoleResourceAction(String model,String resourceId)
+    private static String createRoleResourceAction(String tablePrefix,String resourceId)
     {
-        String sql = "INSERT INTO `" + model + "_resource_action` (`resourceId`,`name`,`actionAlias`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`status`)" +
+        String sql = "INSERT INTO `" + tablePrefix + "_resource_action` (`resourceId`,`name`,`actionAlias`,`creator`,`createDate`,`lastModifier`,`lastModDate`,`description`,`status`)" +
                 "      VALUES("+resourceId+",'分配资源','resource_assign',0,1451975928507,0,1451975928507,'分配资源',0)";
         return sql;
     }
 
-    private static void insertSql(List<String> sqlList, String model) {
+    private static void insertSql(List<String> sqlList, String tablePrefix) {
         List<String> list_menu = new ArrayList<String>();
-        String role = "insert into " + model + "_role (id, `name` ,  `description` ,`status`," +
+        String role = "insert into " + tablePrefix + "_role (id, `name` ,  `description` ,`status`," +
                 "`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` ) values(1,'超级管理员','超级管理员',0,0,0,0,0)";
-        String roleUser = "insert into " + model + "_role_user(`status` ,`userId`,`roleId` ," +
+        String roleUser = "insert into " + tablePrefix + "_role_user(`status` ,`userId`,`roleId` ," +
                 "`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`)values(0,1,1,0,0,0,0)";
-        String menu = "insert into " + model + "_role_resource ( `status`, `resourceId` , `resourceActionId`, `roleId`," +
+        String menu = "insert into " + tablePrefix + "_role_resource ( `status`, `resourceId` , `resourceActionId`, `roleId`," +
                 "`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`  )" +
-                "select 0,id,0,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from " + model + "_resource";
-        String menuAction = "insert into " + model + "_role_resource (`status`,`resourceId` ,`resourceActionId`,`roleId`," +
+                "select 0,id,0,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from " + tablePrefix + "_resource";
+        String menuAction = "insert into " + tablePrefix + "_role_resource (`status`,`resourceId` ,`resourceActionId`,`roleId`," +
                 "`creator` ,`createDate` ,`lastModifier`  ,`lastModDate`  )" +
-                "select 0,resourceId,id,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from " + model + "_resource_action";
+                "select 0,resourceId,id,1,`creator` ,`createDate` ,`lastModifier`  ,`lastModDate` from " + tablePrefix + "_resource_action";
         list_menu.add(role);
         list_menu.add(roleUser);
         list_menu.add(menu);
@@ -596,7 +603,7 @@ public class GeneratorMain {
                 stmt.addBatch(sql);
                 stmt.executeBatch();
             }
-            ResultSet rs =  stmt.executeQuery(getRoleResourceId(model));
+            ResultSet rs =  stmt.executeQuery(getRoleResourceId(tablePrefix));
             String id = "";
             if(rs.next())
             {
@@ -604,7 +611,7 @@ public class GeneratorMain {
             }
             if(!StringUtils.isNullOrEmpty(id))
             {
-                stmt.addBatch(createRoleResourceAction(model,id));
+                stmt.addBatch(createRoleResourceAction(tablePrefix,id));
                 stmt.executeBatch();
             }
             for (String sql : list_menu) {
