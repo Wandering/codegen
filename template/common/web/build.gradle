@@ -16,6 +16,7 @@ dependencies {
 
     compile group:"cn.thinkjoy.ucenter",name:"ucenter-client",version:"$ucenterVersion", changing: true
 
+    compile "javax.el:javax.el-api:3.0.0"
 
     testCompile 'org.eclipse.jetty.aggregate:jetty-webapp:8.1.9.v20130131'
     testCompile 'org.eclipse.jetty:jetty-jsp:8.1.9.v20130131'
