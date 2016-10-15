@@ -10,6 +10,9 @@
 
 package ${basepackage}.controller;
 
+import cn.thinkjoy.common.managerui.controller.AbstractCommonController;
+import cn.thinkjoy.common.managerui.controller.helpers.ActionPermHelper;
+import cn.thinkjoy.common.managerui.domain.Resource;
 
 import cn.thinkjoy.common.managerui.controller.helpers.BasePersistenceProviderMaps;
 import cn.thinkjoy.common.managerui.controller.helpers.BaseServiceMaps;
@@ -18,6 +21,7 @@ import cn.thinkjoy.common.managerui.controller.AbstractCommonController;
 import cn.thinkjoy.common.service.IBaseService;
 import ${basepackage}.common.PersistenceProviderMaps;
 import ${basepackage}.common.ServiceMaps;
+import ${basepackage}.common.MenuUtils;
 
 
 import com.mysql.jdbc.StringUtils;
@@ -25,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +38,8 @@ import java.util.Map;
 public class CommonController extends AbstractCommonController{
     @Autowired
     private ServiceMaps serviceMaps;
+
+    private static final String INDEX = "index";
 
     @Autowired
     private PersistenceProviderMaps persistenceProviderMaps;
@@ -62,6 +69,44 @@ public class CommonController extends AbstractCommonController{
         getServiceMaps().get(mainObj).delete(dataMap.get("id"));
     }
 
+    @Autowired
+    private ActionPermHelper actionPermHelper;
+    /**
+     * 获取功能菜单
+     * @return
+     */
+    @RequestMapping(value="/index")
+    public ModelAndView doMenu(){
+        return doIndexView(request,response);
+    }
+    /**
+     * 获取首页必备组件
+     * @param request
+     * @param response
+     * @return
+     */
+    protected ModelAndView doIndexView(HttpServletRequest request, HttpServletResponse response){
+        ModelAndView mav=new ModelAndView(INDEX);
+        enhancePreModelAndView(request,mav);
+        List<Resource> resourceList = actionPermHelper.getResourcePerm(INDEX);
+        mav.addObject("resources", MenuUtils.getTreeMenu(resourceList));
+        enhanceModelAndView(request,mav);
+        return mav;
+    }
+    /**
+     * 在方法前加载重载子类重载, 注入业务数据给 ModelAndView
+     * @param mav
+     */
+    protected void enhancePreModelAndView(final HttpServletRequest request, final ModelAndView mav){
+
+    }
+    /**
+     * 子类重载, 注入业务数据给 ModelAndView
+     * @param mav
+     */
+    protected void enhanceModelAndView(final HttpServletRequest request, final ModelAndView mav){
+
+    }
     @Override
     protected void innerHandleAdd(String mainObj, Map dataMap) {
         Map<String, Object> newDataMap = (Map<String, Object>)dataMap;

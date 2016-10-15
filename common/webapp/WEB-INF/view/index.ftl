@@ -8,7 +8,7 @@
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
 <div id="wrapper">
     <!--左侧导航开始-->
-<#include "nav_left1.ftl">
+<#include "nav_left.ftl">
     <!--左侧导航结束-->
     <!--右侧部分开始-->
 <#include "page-wrapper.ftl">

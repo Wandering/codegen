@@ -11,5 +11,4 @@
 <#--js部分-->
 <@mapperEl_include "/module/custome/script/${classNameAllLower}_biz_script.ftl" />
 
-<@mapperEl_include "footer.html" />
 </body>
